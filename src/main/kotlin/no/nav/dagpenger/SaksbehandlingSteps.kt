@@ -29,7 +29,7 @@ class SaksbehandlingSteps : No {
     init {
         Gitt("en søker med aktør id {string}") { aktørId: String ->
             søknad = mapOf(
-                    "@id" to "ascbascb",
+                    "@id" to "'ascbascb'",
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
                     "fødselsnummer" to "12345678910",
