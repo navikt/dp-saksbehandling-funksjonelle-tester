@@ -25,8 +25,11 @@ spec:
           - -logtostderr
           - -vault=https://vault.adeo.no
           - -one-shot
+          - -save-token=/var/run/secrets/nais.io/vault/vault_token
           - -cn=secret:serviceuser/data/dev/srvdp-funk-test:dir=/var/run/secrets/nais.io/service_user,fmt=flatten
           env:
+          - name: VAULT_TOKEN_PATH
+            value: /var/run/secrets/nais.io/vault/vault_token
           - name: VAULT_AUTH_METHOD
             value: kubernetes
           - name: VAULT_SIDEKICK_ROLE
