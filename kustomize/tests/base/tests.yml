@@ -25,7 +25,7 @@ spec:
           - -logtostderr
           - -vault=https://vault.adeo.no
           - -one-shot
-          - -cn=secret:kv/preprod/fss/dp-regel-api-arena-adapter/default:dir=/var/run/secrets/nais.io/vault,fmt=flatten
+          - -cn=secret:serviceuser/data/dev/srvdp-funk-test:dir=/var/run/secrets/nais.io/service_user,fmt=flatten
           env:
           - name: VAULT_AUTH_METHOD
             value: kubernetes
@@ -37,6 +37,9 @@ spec:
           - mountPath: /var/run/secrets/nais.io/vault
             name: vault-volume
             subPath: subpath/var/run/secrets/nais.io/vault
+          - mountPath: /var/run/secrets/nais.io/service_user
+            name: vault-secrets
+            subPath: subpath/var/run/secrets/nais.io/service_user
       containers:
         - name: dp-saksbehandling-funksjonelle-tester
           resources:

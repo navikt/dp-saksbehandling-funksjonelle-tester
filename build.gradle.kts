@@ -27,7 +27,7 @@ group = "no.nav.dagpenger"
 
 application {
     applicationName = "dp-saksbehandling-funksjonelle-tester"
-    mainClassName = "no.nav.dagpenger.cucumber.RunCucumberKt"
+    mainClassName = "no.nav.dagpenger.RunCucumberKt"
 }
 
 dependencies {
@@ -36,20 +36,9 @@ dependencies {
     implementation(Cucumber.java8)
     implementation(Cucumber.junit)
 
-    implementation(Fuel.fuel) {
-        exclude(group = "org.jetbrains.kotlin")
-    }
-    implementation(Fuel.fuelMoshi)
-
     implementation(Junit5.api)
 
     implementation(Konfig.konfig)
-
-    implementation(Moshi.moshi)
-    implementation(Moshi.moshiKotlin) {
-        exclude(group = "org.jetbrains.kotlin")
-    }
-    implementation(Moshi.moshiAdapters)
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:${Kotlin.version}")
 }
