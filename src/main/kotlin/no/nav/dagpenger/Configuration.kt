@@ -25,7 +25,7 @@ private val devProperties = ConfigurationMap(
         )
 )
 
-private val optionalFile = ConfigurationProperties.fromOptionalFile(File("/var/run/secrets/nais.io/vault/service_user"))
+private val optionalFile = ConfigurationProperties.fromOptionalFile(File("/var/run/secrets/nais.io/service_user"))
 
 private fun config() = when (System.getenv("CUCUMBER_ENV") ?: System.getProperty("CUCUMBER_ENV")) {
     "dev" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding devProperties overriding optionalFile
