@@ -1,7 +1,6 @@
 package no.nav.dagpenger
 
-import com.natpryce.konfig.*
-import java.io.File
+import com.natpryce.konfig.* // ktlint-disable no-wildcard-imports
 
 private const val TOPIC = "privat-dagpenger-behov-v2"
 
