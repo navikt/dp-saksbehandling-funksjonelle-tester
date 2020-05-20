@@ -1,6 +1,7 @@
 package no.nav.dagpenger
 
 import com.natpryce.konfig.* // ktlint-disable no-wildcard-imports
+import java.io.File
 
 private const val TOPIC = "privat-dagpenger-behov-v2"
 
@@ -24,8 +25,10 @@ private val devProperties = ConfigurationMap(
         )
 )
 
+private val optionalFile = ConfigurationProperties.fromOptionalFile(File("/var/run/secrets/nais.io/vault/service_user"))
+
 private fun config() = when (System.getenv("CUCUMBER_ENV") ?: System.getProperty("CUCUMBER_ENV")) {
-    "dev" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding devProperties
+    "dev" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding devProperties overriding optionalFile
     else -> {
         ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding localProperties
     }
