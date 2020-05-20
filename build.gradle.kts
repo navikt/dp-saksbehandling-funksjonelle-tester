@@ -36,7 +36,10 @@ dependencies {
     implementation(Cucumber.java8)
     implementation(Cucumber.junit)
 
+    implementation(kotlin("test"))
     implementation(Junit5.api)
+    implementation(KoTest.assertions)
+    implementation(KoTest.runner)
 
     implementation(Konfig.konfig)
 
