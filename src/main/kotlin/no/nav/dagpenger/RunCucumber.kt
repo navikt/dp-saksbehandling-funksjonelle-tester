@@ -1,4 +1,4 @@
-package no.nav.dagpenger.cucumber
+package no.nav.dagpenger
 
 import io.cucumber.core.cli.Main
 
