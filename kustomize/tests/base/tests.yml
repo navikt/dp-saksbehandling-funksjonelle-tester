@@ -35,8 +35,11 @@ spec:
             value: auth/kubernetes/preprod/fss/login
           volumeMounts:
           - mountPath: /var/run/secrets/nais.io/vault
-            name: vault-volume
+            name: vault-secrets
             subPath: subpath/var/run/secrets/nais.io/vault
+          - mountPath: /var/run/secrets/nais.io/service_user
+            name: vault-secrets
+            subPath: subpath/var/run/secrets/nais.io/service_user
       containers:
         - name: dp-saksbehandling-funksjonelle-tester
           resources:
@@ -75,8 +78,11 @@ spec:
             name: ca-bundle
             subPath: ca-bundle.jks
           - mountPath: /var/run/secrets/nais.io/vault/
-            name: vault-volume
+            name: vault-secrets
             subPath: subpath/var/run/secrets/nais.io/vault
+          - mountPath: /var/run/secrets/nais.io/service_user
+            name: vault-secrets
+            subPath: subpath/var/run/secrets/nais.io/service_user
       volumes:
       - name: vault-volume
         emptyDir:
