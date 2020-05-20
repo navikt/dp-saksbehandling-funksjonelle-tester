@@ -84,7 +84,7 @@ spec:
             name: vault-secrets
             subPath: subpath/var/run/secrets/nais.io/service_user
       volumes:
-      - name: vault-volume
+      - name: vault-secrets
         emptyDir:
           medium: Memory
       - name: ca-bundle
