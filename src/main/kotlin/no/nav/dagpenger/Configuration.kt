@@ -25,7 +25,7 @@ private val devProperties = ConfigurationMap(
 )
 
 private fun config() = when (System.getenv("CUCUMBER_ENV") ?: System.getProperty("CUCUMBER_ENV")) {
-    "dev-fss" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding devProperties
+    "dev" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding devProperties
     else -> {
         ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding localProperties
     }
