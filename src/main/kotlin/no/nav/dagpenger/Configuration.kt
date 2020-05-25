@@ -1,6 +1,8 @@
 package no.nav.dagpenger
 
 import com.natpryce.konfig.* // ktlint-disable no-wildcard-imports
+import java.io.File
+import java.io.FileNotFoundException
 
 private const val TOPIC = "privat-dagpenger-behov-v2"
 
@@ -21,7 +23,9 @@ private val devProperties = ConfigurationMap(
                 "profile" to Profile.DEV.toString(),
                 "kafka.bootstrap.servers" to "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
                 "kafka.topic" to TOPIC,
-                "kafka.reset.policy" to "latest"
+                "kafka.reset.policy" to "latest",
+                "username" to "/var/run/secrets/nais.io/service_user/username".readFile(),
+                "password" to "/var/run/secrets/nais.io/service_user/password".readFile()
         )
 )
 
@@ -54,3 +58,10 @@ object Configuration {
 enum class Profile {
     LOCAL, DEV
 }
+
+private fun String.readFile() =
+        try {
+            File(this).readText(Charsets.UTF_8)
+        } catch (err: FileNotFoundException) {
+            null
+        }
