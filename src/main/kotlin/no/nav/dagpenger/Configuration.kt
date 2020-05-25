@@ -21,7 +21,7 @@ private val devProperties = ConfigurationMap(
                 "profile" to Profile.DEV.toString(),
                 "kafka.bootstrap.servers" to "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
                 "kafka.topic" to TOPIC,
-                "kafka.reset.policy" to "earliest"
+                "kafka.reset.policy" to "latest"
         )
 )
 

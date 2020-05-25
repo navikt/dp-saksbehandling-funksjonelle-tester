@@ -55,6 +55,8 @@ class SaksbehandlingSteps() : No {
             val consumer = createConsumer(Configuration.bootstrapServers)
             consumer.subscribe(listOf(Configuration.topic))
 
+            log.info { "polling" }
+
             val records = consumer.poll(Duration.ofSeconds(3L))
 
             log.info { "records size ${records.count()}" }
