@@ -39,6 +39,7 @@ class SaksbehandlingSteps : No {
             )
 
             rapid = Rapid(rapidsConnection, aktørId)
+            rapidsConnection.start()
         }
 
         Når("vi skal vurdere søknaden") {
