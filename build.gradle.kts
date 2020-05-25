@@ -41,6 +41,8 @@ dependencies {
     implementation(KoTest.assertions)
     implementation(KoTest.runner)
 
+    implementation(Kotlin.Logging.kotlinLogging)
+
     implementation(Konfig.konfig)
 
     implementation(RapidAndRivers)

@@ -1,8 +1,12 @@
 package no.nav.dagpenger
 
+import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
+import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+
+private val log = KotlinLogging.logger {}
 
 internal class Rapid(
     rapidsConnection: RapidsConnection,
@@ -20,5 +24,9 @@ internal class Rapid(
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         vedtakErEndret = true
+    }
+
+    override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
+        log.info { problems.toString() }
     }
 }
