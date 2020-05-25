@@ -12,9 +12,14 @@ import java.time.LocalDateTime
 import java.util.Properties
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
+import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.Consumer
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.config.SaslConfigs
+import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
+import java.io.File
 
 private val log = KotlinLogging.logger {}
 
@@ -68,11 +73,34 @@ class SaksbehandlingSteps() : No {
     }
 
     private fun createConsumer(brokers: String): Consumer<String, String> {
-        val props = Properties()
-        props["bootstrap.servers"] = brokers
-        props["group.id"] = "dp-saksbehandling-funksjonelle-tester-kodd"
-        props["key.deserializer"] = StringDeserializer::class.java
-        props["value.deserializer"] = StringDeserializer::class.java
+        val props = Properties().apply {
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
+            put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true")
+            put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
+            put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, Configuration.resetPolicy)
+            put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokers)
+
+            put(SaslConfigs.SASL_MECHANISM, "PLAIN")
+            put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
+            put(
+                    SaslConfigs.SASL_JAAS_CONFIG,
+                    "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${Configuration.username}\" password=\"${Configuration.password}\";"
+            )
+
+            val trustStoreLocation = System.getenv("NAV_TRUSTSTORE_PATH")
+            trustStoreLocation?.let {
+                try {
+                    put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
+                    put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(it).absolutePath)
+                    put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, System.getenv("NAV_TRUSTSTORE_PASSWORD"))
+                    log.info { "Configured '${SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG}' location " }
+                } catch (e: Exception) {
+                    log.error { "Failed to set '${SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG}' location " }
+                }
+            }
+        }
+    
         return KafkaConsumer<String, String>(props)
     }
 }

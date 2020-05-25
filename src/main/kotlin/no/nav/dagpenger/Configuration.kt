@@ -36,12 +36,16 @@ object Configuration {
     val profile: Profile = config()[Key("profile", stringType)].let { Profile.valueOf(it) }
     val bootstrapServers = config()[Key("kafka.bootstrap.servers", stringType)]
     val topic = config()[Key("kafka.topic", stringType)]
+    val resetPolicy = config()[Key("kafka.reset.policy", stringType)]
+    
+    val username = config()[Key("username", stringType)]
+    val password = config()[Key("password", stringType)]
 
     val rapidApplication: Map<String, String> = mapOf(
             "KAFKA_BOOTSTRAP_SERVERS" to bootstrapServers,
             "KAFKA_CONSUMER_GROUP_ID" to "dp-saksbehandling-funksjonelle-tester",
             "KAFKA_RAPID_TOPIC" to topic,
-            "KAFKA_RESET_POLICY" to config()[Key("kafka.reset.policy", stringType)],
+            "KAFKA_RESET_POLICY" to resetPolicy,
             "NAV_TRUSTSTORE_PATH" to config()[Key("nav.truststore.path", stringType)],
             "NAV_TRUSTSTORE_PASSWORD" to config()[Key("nav.truststore.password", stringType)]
     )
