@@ -18,12 +18,15 @@ internal class Rapid(
         River(rapidsConnection).apply {
             validate { it.demandAll("@event_name", listOf("vedtak_endret")) }
             validate { it.interestedIn("aktørId") }
-            validate { it.requireValue("aktørId", aktørId) }
         }.register(this)
     }
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-        vedtakErEndret = true
+        log.info { packet }
+
+        if (packet["aktørId"].asText() == aktørId) {
+            vedtakErEndret = true
+        }
     }
 
     override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
