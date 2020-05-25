@@ -10,10 +10,13 @@ import io.kotest.matchers.shouldBe
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.Properties
+import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
+
+private val log = KotlinLogging.logger {}
 
 class SaksbehandlingSteps() : No {
     private lateinit var søknad: Map<String, String>
@@ -54,7 +57,9 @@ class SaksbehandlingSteps() : No {
 
             val records = consumer.poll(Duration.ofSeconds(3L))
 
-            records.map { objectMapper.readTree(it.value()) }
+            log.info { "records size ${records.count()}" }
+
+            records.asSequence().map { objectMapper.readTree(it.value()) }
                     .filter { it["@event_name"].asText() == "vedtak_endret" }
                     .any { it["aktørId"].asText() == aktørId } shouldBe true
         }
