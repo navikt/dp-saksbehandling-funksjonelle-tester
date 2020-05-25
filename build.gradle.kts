@@ -43,8 +43,9 @@ dependencies {
 
     implementation(Konfig.konfig)
 
-    // rapid rivers
     implementation(RapidAndRivers)
+
+    implementation(Ulid.ulid)
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:${Kotlin.version}")
 }

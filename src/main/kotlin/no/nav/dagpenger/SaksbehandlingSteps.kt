@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
@@ -29,12 +30,12 @@ class SaksbehandlingSteps : No {
     init {
         Gitt("en søker med aktør id {string}") { aktørId: String ->
             søknad = mapOf(
-                    "@id" to "'ascbascb'",
+                    "@id" to ULID().nextULID(),
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
                     "fødselsnummer" to "12345678910",
                     "aktørId" to aktørId,
-                    "behandlingId" to "basbcacsb"
+                    "behandlingId" to ULID().nextULID()
             )
 
             rapid = Rapid(rapidsConnection, aktørId)
