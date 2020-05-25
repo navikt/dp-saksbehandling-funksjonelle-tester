@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldBe
+import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.Properties
@@ -19,7 +20,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
-import java.io.File
 
 private val log = KotlinLogging.logger {}
 
@@ -100,7 +100,7 @@ class SaksbehandlingSteps() : No {
                 }
             }
         }
-    
+
         return KafkaConsumer<String, String>(props)
     }
 }

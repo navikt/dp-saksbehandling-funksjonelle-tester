@@ -37,7 +37,7 @@ object Configuration {
     val bootstrapServers = config()[Key("kafka.bootstrap.servers", stringType)]
     val topic = config()[Key("kafka.topic", stringType)]
     val resetPolicy = config()[Key("kafka.reset.policy", stringType)]
-    
+
     val username = config()[Key("username", stringType)]
     val password = config()[Key("password", stringType)]
 
