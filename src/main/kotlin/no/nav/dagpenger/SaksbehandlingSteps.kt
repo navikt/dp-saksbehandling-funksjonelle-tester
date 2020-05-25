@@ -48,7 +48,7 @@ class SaksbehandlingSteps() : No {
 
         Når("vi skal vurdere søknaden") {
             sendToRapid(søknad)
-            Thread.sleep(10000)
+            log.info { "publiserte søknadsmessage" }
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
