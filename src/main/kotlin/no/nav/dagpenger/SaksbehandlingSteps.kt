@@ -12,6 +12,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.Properties
 import mu.KotlinLogging
+import no.nav.helse.rapids_rivers.RapidApplication
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -25,23 +26,18 @@ private val log = KotlinLogging.logger {}
 class SaksbehandlingSteps() : No {
     private lateinit var søknad: Map<String, String>
 
-    /*
     private val rapidsConnection = RapidApplication.Builder(
             RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
     ).build()
-    
-     */
 
     private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-    /*
     fun sendToRapid(behov: Map<*, *>) {
         rapidsConnection.publish(objectMapper.writeValueAsString(behov))
     }
-     */
 
     init {
         Gitt("en søker med aktørid {string}") { aktørId: String ->
@@ -56,7 +52,8 @@ class SaksbehandlingSteps() : No {
         }
 
         Når("vi skal vurdere søknaden") {
-            // sendToRapid(søknad)
+            sendToRapid(søknad)
+            rapidsConnection.stop()
             log.info { "publiserte søknadsmessage" }
         }
 
