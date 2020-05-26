@@ -8,12 +8,10 @@ import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldBe
 import java.io.File
-import java.lang.Thread.sleep
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.Properties
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.RapidApplication
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -27,21 +25,25 @@ private val log = KotlinLogging.logger {}
 class SaksbehandlingSteps() : No {
     private lateinit var søknad: Map<String, String>
 
+    /*
     private val rapidsConnection = RapidApplication.Builder(
             RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
     ).build()
+    
+     */
 
     private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
+    /*
     fun sendToRapid(behov: Map<*, *>) {
         rapidsConnection.publish(objectMapper.writeValueAsString(behov))
     }
+     */
 
     init {
-        sleep(120000)
         Gitt("en søker med aktørid {string}") { aktørId: String ->
             søknad = mapOf(
                     "@id" to ULID().nextULID(),
@@ -54,7 +56,7 @@ class SaksbehandlingSteps() : No {
         }
 
         Når("vi skal vurdere søknaden") {
-            sendToRapid(søknad)
+            // sendToRapid(søknad)
             log.info { "publiserte søknadsmessage" }
         }
 
@@ -64,7 +66,7 @@ class SaksbehandlingSteps() : No {
 
             log.info { "polling" }
 
-            val records = consumer.poll(Duration.ofSeconds(3L))
+            val records = consumer.poll(Duration.ofSeconds(10L))
 
             log.info { "records size ${records.count()}" }
 
