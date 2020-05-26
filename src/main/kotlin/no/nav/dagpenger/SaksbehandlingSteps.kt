@@ -57,6 +57,8 @@ class SaksbehandlingSteps() : No {
             runBlocking {
                 val messages = mutableListOf<JsonMessage>()
 
+                log.info { "starting rapid" }
+
                 val job = launch {
                     object : River.PacketListener {
                         init {
@@ -74,10 +76,12 @@ class SaksbehandlingSteps() : No {
                 rapidsConnection.start()
 
                 delay(5000)
+                log.info { "finished waiting" }
                 job.cancelAndJoin()
 
                 log.info { "messages size: ${messages.size}" }
                 messages.size shouldNotBe 0
+
             }
         }
     }
