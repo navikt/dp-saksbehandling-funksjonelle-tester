@@ -74,7 +74,7 @@ class SaksbehandlingSteps() : No {
 
                 launch { rapidsConnection.start() }
                 log.info { "2s delay" }
-                delay(2000L)
+                delay(20)
                 log.info { "finished waiting" }
 
                 rapidsConnection.stop()
