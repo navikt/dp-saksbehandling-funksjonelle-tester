@@ -74,7 +74,7 @@ class SaksbehandlingSteps() : No {
 
     private fun createConsumer(brokers: String): Consumer<String, String> {
         val props = Properties().apply {
-            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
             put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true")
             put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
