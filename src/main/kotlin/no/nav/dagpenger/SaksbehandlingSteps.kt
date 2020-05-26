@@ -69,13 +69,14 @@ class SaksbehandlingSteps() : No {
 
             records.asSequence().map { objectMapper.readTree(it.value()) }
                     .filter { it["@event_name"].asText() == "vedtak_endret" }
+                    .onEach { log.info("Found: ${it["@event_name"].asText()}") }
                     .any { it["aktørId"].asText() == aktørId } shouldBe true
         }
     }
 
     private fun createConsumer(brokers: String): Consumer<String, String> {
         val props = Properties().apply {
-            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
             put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true")
             put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
