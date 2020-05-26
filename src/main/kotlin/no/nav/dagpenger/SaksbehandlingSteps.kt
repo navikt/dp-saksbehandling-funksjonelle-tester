@@ -6,14 +6,20 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
-import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.shouldBe
+import java.io.File
+import java.time.Duration
 import java.time.LocalDateTime
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import java.util.Properties
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.* // ktlint-disable no-wildcard-imports
+import no.nav.helse.rapids_rivers.RapidApplication
+import org.apache.kafka.clients.CommonClientConfigs
+import org.apache.kafka.clients.consumer.Consumer
+import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.config.SaslConfigs
+import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.serialization.StringDeserializer
 
 private val log = KotlinLogging.logger {}
 
@@ -51,37 +57,51 @@ class SaksbehandlingSteps() : No {
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
+            val consumer = createConsumer(Configuration.bootstrapServers)
+            consumer.subscribe(listOf(Configuration.topic))
 
-            val messages = mutableListOf<JsonMessage>()
+            log.info { "polling" }
 
-            log.info { "setting up rapid rapid" }
+            val records = consumer.poll(Duration.ofSeconds(3L))
 
-            GlobalScope.launch {
-                object : River.PacketListener {
-                    init {
-                        River(rapidsConnection).apply {
-                            validate { it.requireKey("aktørId") }
-                            // @todo validér aktørId og riktig state
-                        }.register(this)
-                    }
+            log.info { "records size ${records.count()}" }
 
-                    override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                        log.info { "found packet" }
-                        messages.add(packet)
-                    }
-                }
-                log.info { "starting rapid" }
-                rapidsConnection.start() }
-            sendToRapid(mapOf("aktørId" to "test"))
-            log.info { "2s delay" }
-            runBlocking { delay(2000) }
-            log.info { "finished waiting" }
-
-            rapidsConnection.stop()
-
-            log.info { "messages size: ${messages.size}" }
-
-            messages.size shouldNotBe 0
+            records.asSequence().map { objectMapper.readTree(it.value()) }
+                    .filter { it["@event_name"].asText() == "vedtak_endret" }
+                    .any { it["aktørId"].asText() == aktørId } shouldBe true
         }
+    }
+
+    private fun createConsumer(brokers: String): Consumer<String, String> {
+        val props = Properties().apply {
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
+            put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true")
+            put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
+            put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, Configuration.resetPolicy)
+            put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokers)
+            put(ConsumerConfig.GROUP_ID_CONFIG, "dp-saksbehandling-funksjonelle-tester-tjafs")
+
+            put(SaslConfigs.SASL_MECHANISM, "PLAIN")
+            put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
+            put(
+                    SaslConfigs.SASL_JAAS_CONFIG,
+                    "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${Configuration.username}\" password=\"${Configuration.password}\";"
+            )
+
+            val trustStoreLocation = System.getenv("NAV_TRUSTSTORE_PATH")
+            trustStoreLocation?.let {
+                try {
+                    put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
+                    put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(it).absolutePath)
+                    put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, System.getenv("NAV_TRUSTSTORE_PASSWORD"))
+                    log.info { "Configured '${SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG}' location " }
+                } catch (e: Exception) {
+                    log.error { "Failed to set '${SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG}' location " }
+                }
+            }
+        }
+
+        return KafkaConsumer<String, String>(props)
     }
 }
