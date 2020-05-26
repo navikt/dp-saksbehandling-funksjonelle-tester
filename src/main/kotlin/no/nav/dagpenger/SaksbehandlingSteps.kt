@@ -69,23 +69,16 @@ class SaksbehandlingSteps() : No {
                         log.info { "found packet" }
                         messages.add(packet)
                     }
-
-                    override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
-                        log.warn { "noe feil skjer her, $problems" }
-                    }
-
-                    override fun onSevere(error: MessageProblems.MessageException, context: RapidsConnection.MessageContext) {
-                        log.warn(error) { "noe alvorlig feil skjer her" }
-                    }
                 }
                 log.info { "starting rapid" }
                 rapidsConnection.start() }
-
+            sendToRapid(mapOf("aktørId" to "test"))
             log.info { "2s delay" }
             runBlocking { delay(2000) }
             log.info { "finished waiting" }
 
             rapidsConnection.stop()
+
             log.info { "messages size: ${messages.size}" }
 
             messages.size shouldNotBe 0
