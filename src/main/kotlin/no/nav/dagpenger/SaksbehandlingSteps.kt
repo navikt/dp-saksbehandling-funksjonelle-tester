@@ -8,7 +8,6 @@ import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDateTime
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -77,11 +76,12 @@ class SaksbehandlingSteps() : No {
 
                 delay(5000)
                 log.info { "finished waiting" }
-                job.cancelAndJoin()
+
+                job.cancel()
+                rapidsConnection.stop()
 
                 log.info { "messages size: ${messages.size}" }
                 messages.size shouldNotBe 0
-
             }
         }
     }
