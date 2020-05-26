@@ -9,7 +9,6 @@ import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDateTime
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
@@ -53,39 +52,32 @@ class SaksbehandlingSteps() : No {
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
+            val messages = mutableListOf<JsonMessage>()
+
+            log.info { "starting rapid" }
+
             runBlocking {
-                val messages = mutableListOf<JsonMessage>()
+                object : River.PacketListener {
+                    init {
+                        River(rapidsConnection).apply {
+                            validate { it.demandAll("@event_name", listOf("vedtak_endret")) }
+                            // @todo validér aktørId og riktig state
+                        }.register(this)
+                    }
 
-                log.info { "starting rapid" }
-
-                val job = launch {
-                    try {
-                        object : River.PacketListener {
-                            init {
-                                River(rapidsConnection).apply {
-                                    validate { it.demandAll("@event_name", listOf("vedtak_endret")) }
-                                    // @todo validér aktørId og riktig state
-                                }.register(this)
-                            }
-
-                            override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                                messages.add(packet)
-                            }
-                        }
-                        rapidsConnection.start()
-                    } finally {
-                        rapidsConnection.stop()
+                    override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                        messages.add(packet)
                     }
                 }
-
-                delay(5000)
+                rapidsConnection.start()
+                log.info { "2s delay" }
+                delay(2000)
                 log.info { "finished waiting" }
-
-                job.cancel()
-
-                log.info { "messages size: ${messages.size}" }
-                messages.size shouldNotBe 0
+                rapidsConnection.stop()
             }
+
+            log.info { "messages size: ${messages.size}" }
+            messages.size shouldNotBe 0
         }
     }
 }
