@@ -59,26 +59,29 @@ class SaksbehandlingSteps() : No {
                 log.info { "starting rapid" }
 
                 val job = launch {
-                    object : River.PacketListener {
-                        init {
-                            River(rapidsConnection).apply {
-                                validate { it.demandAll("@event_name", listOf("vedtak_endret")) }
-                                // @todo validér aktørId og riktig state
-                            }.register(this)
-                        }
+                    try {
+                        object : River.PacketListener {
+                            init {
+                                River(rapidsConnection).apply {
+                                    validate { it.demandAll("@event_name", listOf("vedtak_endret")) }
+                                    // @todo validér aktørId og riktig state
+                                }.register(this)
+                            }
 
-                        override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                            messages.add(packet)
+                            override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                                messages.add(packet)
+                            }
                         }
+                        rapidsConnection.start()
+                    } finally {
+                        rapidsConnection.stop()
                     }
                 }
-                rapidsConnection.start()
 
                 delay(5000)
                 log.info { "finished waiting" }
 
                 job.cancel()
-                rapidsConnection.stop()
 
                 log.info { "messages size: ${messages.size}" }
                 messages.size shouldNotBe 0
