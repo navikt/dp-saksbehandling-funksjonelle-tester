@@ -9,6 +9,7 @@ import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDateTime
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
@@ -71,7 +72,7 @@ class SaksbehandlingSteps() : No {
                     }
                 }
 
-                runBlocking {
+                launch {
                     try {
                         rapidsConnection.start()
                         log.info { "2s delay" }
@@ -82,7 +83,8 @@ class SaksbehandlingSteps() : No {
                         rapidsConnection.stop()
                     }
                 }
-
+                delay(2000L)
+                rapidsConnection.stop()
                 log.info { "messages size: ${messages.size}" }
                 messages.size shouldNotBe 0
             }
