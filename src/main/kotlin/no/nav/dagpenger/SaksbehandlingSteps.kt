@@ -20,6 +20,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
+import java.lang.Thread.sleep
 
 private val log = KotlinLogging.logger {}
 
@@ -40,6 +41,7 @@ class SaksbehandlingSteps() : No {
     }
 
     init {
+        sleep(120000)
         Gitt("en søker med aktørid {string}") { aktørId: String ->
             søknad = mapOf(
                     "@id" to ULID().nextULID(),
