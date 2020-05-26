@@ -68,8 +68,8 @@ class SaksbehandlingSteps() : No {
             log.info { "records size ${records.count()}" }
 
             records.asSequence().map { objectMapper.readTree(it.value()) }
-                    .filter { it["@event_name"].asText() == "vedtak_endret" }
                     .onEach { log.info("Found: ${it["@event_name"].asText()}") }
+                    .filter { it["@event_name"].asText() == "vedtak_endret" }
                     .any { it["aktørId"].asText() == aktørId } shouldBe true
         }
     }
