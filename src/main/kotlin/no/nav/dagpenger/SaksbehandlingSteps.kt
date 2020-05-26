@@ -8,7 +8,9 @@ import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDateTime
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
@@ -71,7 +73,7 @@ class SaksbehandlingSteps() : No {
             }
             log.info { "starting rapid" }
 
-            rapidsConnection.start()
+            GlobalScope.launch { rapidsConnection.start() }
 
             log.info { "2s delay" }
             runBlocking { delay(2000) }
