@@ -62,12 +62,13 @@ class SaksbehandlingSteps() : No {
             object : River.PacketListener {
                 init {
                     River(rapidsConnection).apply {
-                        validate { it.demandAll("@event_name", listOf("Søknad")) }
+                        validate { it.requireKey("aktørId") }
                         // @todo validér aktørId og riktig state
                     }.register(this)
                 }
 
                 override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                    log.info { "found packet" }
                     messages.add(packet)
                 }
             }
@@ -81,6 +82,7 @@ class SaksbehandlingSteps() : No {
 
             rapidsConnection.stop()
             log.info { "messages size: ${messages.size}" }
+
             messages.size shouldNotBe 0
         }
     }
