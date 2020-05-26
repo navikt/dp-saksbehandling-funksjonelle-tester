@@ -9,7 +9,6 @@ import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDateTime
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
@@ -54,34 +53,33 @@ class SaksbehandlingSteps() : No {
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
 
-                val messages = mutableListOf<JsonMessage>()
+            val messages = mutableListOf<JsonMessage>()
 
-                log.info { "setting up rapid rapid" }
+            log.info { "setting up rapid rapid" }
 
-                object : River.PacketListener {
-                    init {
-                        River(rapidsConnection).apply {
-                            validate { it.demandAll("@event_name", listOf("Søknad")) }
-                            // @todo validér aktørId og riktig state
-                        }.register(this)
-                    }
-
-                    override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                        messages.add(packet)
-                    }
+            object : River.PacketListener {
+                init {
+                    River(rapidsConnection).apply {
+                        validate { it.demandAll("@event_name", listOf("Søknad")) }
+                        // @todo validér aktørId og riktig state
+                    }.register(this)
                 }
-                log.info { "starting rapid" }
 
-                rapidsConnection.start()
-
-                log.info { "2s delay" }
-                runBlocking { delay(2000) }
-                log.info { "finished waiting" }
-
-                rapidsConnection.stop()
-                log.info { "messages size: ${messages.size}" }
-                messages.size shouldNotBe 0
+                override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                    messages.add(packet)
+                }
             }
+            log.info { "starting rapid" }
+
+            rapidsConnection.start()
+
+            log.info { "2s delay" }
+            runBlocking { delay(2000) }
+            log.info { "finished waiting" }
+
+            rapidsConnection.stop()
+            log.info { "messages size: ${messages.size}" }
+            messages.size shouldNotBe 0
         }
     }
 }
