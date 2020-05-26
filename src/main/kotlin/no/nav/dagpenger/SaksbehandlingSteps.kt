@@ -80,7 +80,7 @@ class SaksbehandlingSteps() : No {
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
             put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, Configuration.resetPolicy)
             put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokers)
-            put(ConsumerConfig.GROUP_ID_CONFIG, "dp-saksbehandling-funksjonelle-tester-tjafs")
+            put(ConsumerConfig.GROUP_ID_CONFIG, "dp-saksbehandling-funksjonelle-tester-tjafs3")
 
             put(SaslConfigs.SASL_MECHANISM, "PLAIN")
             put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
