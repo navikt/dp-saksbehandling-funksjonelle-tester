@@ -8,6 +8,7 @@ import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDateTime
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -70,11 +71,18 @@ class SaksbehandlingSteps() : No {
                         messages.add(packet)
                     }
                 }
-                launch { rapidsConnection.start() }
+                val job = launch {
+                    try {
+                        rapidsConnection.start()
+                    } finally {
+                        rapidsConnection.stop()
+                    }
+                }
 
                 log.info { "2s delay" }
+                delay(2000L)
                 log.info { "finished waiting" }
-                rapidsConnection.stop()
+                job.cancel()
                 log.info { "messages size: ${messages.size}" }
                 messages.size shouldNotBe 0
             }
