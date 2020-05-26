@@ -56,30 +56,30 @@ class SaksbehandlingSteps() : No {
 
             log.info { "setting up rapid rapid" }
 
-            object : River.PacketListener {
-                init {
-                    River(rapidsConnection).apply {
-                        validate { it.requireKey("aktørId") }
-                        // @todo validér aktørId og riktig state
-                    }.register(this)
-                }
+            GlobalScope.launch {
+                object : River.PacketListener {
+                    init {
+                        River(rapidsConnection).apply {
+                            validate { it.requireKey("aktørId") }
+                            // @todo validér aktørId og riktig state
+                        }.register(this)
+                    }
 
-                override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                    log.info { "found packet" }
-                    messages.add(packet)
-                }
+                    override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                        log.info { "found packet" }
+                        messages.add(packet)
+                    }
 
-                override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
-                    log.warn { "noe feil skjer her, $problems" }
-                }
+                    override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
+                        log.warn { "noe feil skjer her, $problems" }
+                    }
 
-                override fun onSevere(error: MessageProblems.MessageException, context: RapidsConnection.MessageContext) {
-                    log.warn(error) { "noe alvorlig feil skjer her" }
+                    override fun onSevere(error: MessageProblems.MessageException, context: RapidsConnection.MessageContext) {
+                        log.warn(error) { "noe alvorlig feil skjer her" }
+                    }
                 }
-            }
-            log.info { "starting rapid" }
-
-            GlobalScope.launch { rapidsConnection.start() }
+                log.info { "starting rapid" }
+                rapidsConnection.start() }
 
             log.info { "2s delay" }
             runBlocking { delay(2000) }
