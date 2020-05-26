@@ -61,7 +61,7 @@ class SaksbehandlingSteps() : No {
                 object : River.PacketListener {
                     init {
                         River(rapidsConnection).apply {
-                            validate { it.demandAll("@event_name", listOf("vedtak_endret")) }
+                            validate { it.demandAll("@event_name", listOf("Søknad")) }
                             // @todo validér aktørId og riktig state
                         }.register(this)
                     }
@@ -76,12 +76,12 @@ class SaksbehandlingSteps() : No {
                         rapidsConnection.start()
                         log.info { "2s delay" }
                         delay(2000L)
+                        log.info { "finished waiting" }
                     } finally {
+                        log.info { "stopping rapid" }
                         rapidsConnection.stop()
                     }
                 }
-
-                log.info { "finished waiting" }
 
                 log.info { "messages size: ${messages.size}" }
                 messages.size shouldNotBe 0
