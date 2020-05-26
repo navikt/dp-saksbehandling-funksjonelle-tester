@@ -46,6 +46,7 @@ object Configuration {
     val password = config()[Key("password", stringType)]
 
     val rapidApplication: Map<String, String> = mapOf(
+            "RAPID_APP_NAME" to "dp-saksbehandling-funksjonelle-tester",
             "KAFKA_BOOTSTRAP_SERVERS" to bootstrapServers,
             "KAFKA_CONSUMER_GROUP_ID" to "dp-saksbehandling-funksjonelle-tester",
             "KAFKA_RAPID_TOPIC" to topic,
