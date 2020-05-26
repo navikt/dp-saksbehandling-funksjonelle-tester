@@ -8,6 +8,7 @@ import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldBe
 import java.io.File
+import java.lang.Thread.sleep
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.Properties
@@ -20,7 +21,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
-import java.lang.Thread.sleep
 
 private val log = KotlinLogging.logger {}
 
