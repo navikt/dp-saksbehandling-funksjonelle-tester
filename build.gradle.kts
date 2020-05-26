@@ -45,6 +45,8 @@ dependencies {
 
     implementation(Konfig.konfig)
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
+
     implementation(RapidAndRivers)
 
     implementation(Ulid.ulid)
