@@ -61,7 +61,7 @@ class SaksbehandlingSteps() : No {
                     object : River.PacketListener {
                         init {
                             River(rapidsConnection).apply {
-                                validate { it.demandAll("@event_name", listOf("vedtak_endret")) }
+                                validate { it.demandAll("@event_name", listOf("Søknad")) }
                                 // @todo validér aktørId og riktig state
                             }.register(this)
                         }
