@@ -13,10 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.RapidApplication
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.* // ktlint-disable no-wildcard-imports
 
 private val log = KotlinLogging.logger {}
 
@@ -70,6 +67,14 @@ class SaksbehandlingSteps() : No {
                 override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
                     log.info { "found packet" }
                     messages.add(packet)
+                }
+
+                override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
+                    log.warn { "noe feil skjer her, $problems" }
+                }
+
+                override fun onSevere(error: MessageProblems.MessageException, context: RapidsConnection.MessageContext) {
+                    log.warn(error) { "noe alvorlig feil skjer her" }
                 }
             }
             log.info { "starting rapid" }
