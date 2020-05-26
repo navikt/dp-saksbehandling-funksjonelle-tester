@@ -47,7 +47,7 @@ object Configuration {
 
     val rapidApplication: Map<String, String> = mapOf(
             "KAFKA_BOOTSTRAP_SERVERS" to bootstrapServers,
-            "KAFKA_CONSUMER_GROUP_ID" to "dp-saksbehandling-funksjonelle-tester",
+            "KAFKA_CONSUMER_GROUP_ID" to "dp-saksbehandling-funksjonelle-tester-tjafs2",
             "KAFKA_RAPID_TOPIC" to topic,
             "KAFKA_RESET_POLICY" to resetPolicy,
             "NAV_TRUSTSTORE_PATH" to config()[Key("nav.truststore.path", stringType)],
