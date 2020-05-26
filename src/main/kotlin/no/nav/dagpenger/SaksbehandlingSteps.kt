@@ -71,6 +71,7 @@ class SaksbehandlingSteps() : No {
                         }
                     }
                 }
+                rapidsConnection.start()
 
                 delay(5000)
                 job.cancelAndJoin()
