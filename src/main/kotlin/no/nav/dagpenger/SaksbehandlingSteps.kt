@@ -54,10 +54,9 @@ class SaksbehandlingSteps() : No {
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
 
-            runBlocking {
                 val messages = mutableListOf<JsonMessage>()
 
-                log.info { "starting rapid" }
+                log.info { "setting up rapid rapid" }
 
                 object : River.PacketListener {
                     init {
@@ -71,10 +70,12 @@ class SaksbehandlingSteps() : No {
                         messages.add(packet)
                     }
                 }
+                log.info { "starting rapid" }
 
-                launch { rapidsConnection.start() }
+                rapidsConnection.start()
+
                 log.info { "2s delay" }
-                delay(20)
+                runBlocking { delay(2000) }
                 log.info { "finished waiting" }
 
                 rapidsConnection.stop()
