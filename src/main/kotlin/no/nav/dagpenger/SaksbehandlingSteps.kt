@@ -64,6 +64,7 @@ class SaksbehandlingSteps() : No {
                 log.info { "messages size: ${messages.size}" }
 
                 messages.size shouldNotBe 0
+                log.info { "on branch" } // todo remove
             }
         }
     }
