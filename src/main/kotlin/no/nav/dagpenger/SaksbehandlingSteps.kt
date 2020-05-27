@@ -50,7 +50,6 @@ class SaksbehandlingSteps() : No {
 
         Når("vi skal vurdere søknaden") {
             sendToRapid(søknad)
-            rapidsConnection.stop()
             log.info { "publiserte søknadsmessage" }
         }
 
