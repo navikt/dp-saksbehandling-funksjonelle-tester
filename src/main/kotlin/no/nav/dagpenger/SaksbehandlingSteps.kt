@@ -16,6 +16,7 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
@@ -61,13 +62,25 @@ class SaksbehandlingSteps() : No {
             val consumer = createConsumer(Configuration.bootstrapServers)
             consumer.subscribe(listOf(Configuration.topic))
 
+            Thread.sleep(5000)
+
             log.info { "polling" }
 
-            val records = consumer.poll(Duration.ofSeconds(10L))
+            val endOffsets = consumer.endOffsets(consumer.assignment())
 
-            log.info { "records size ${records.count()}" }
+            fun pendingMessages() = endOffsets.any { consumer.position(it.key) < it.value }
 
-            records.asSequence().map { objectMapper.readTree(it.value()) }
+            val records = mutableListOf<ConsumerRecords<String, String>>()
+
+            do {
+                records.add(consumer.poll(Duration.ofMillis(1000)))
+            } while (pendingMessages())
+
+            log.info { "records size ${records.flatMap { it.asIterable() }.count()}" }
+
+            records
+                    .flatMap { it.asIterable() }
+                    .asSequence().map { objectMapper.readTree(it.value()) }
                     .filter { it["@event_name"].asText() == "vedtak_endret" }
                     .any { it["aktørId"].asText() == aktørId } shouldBe true
         }
