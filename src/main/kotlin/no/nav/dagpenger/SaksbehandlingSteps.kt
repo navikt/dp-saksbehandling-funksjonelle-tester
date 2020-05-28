@@ -48,6 +48,7 @@ class SaksbehandlingSteps() : No {
 
         Når("vi skal vurdere søknaden") {
             sendToRapid(søknad)
+            rapidsConnection.stop()
             log.info { "publiserte søknadsmessage" }
         }
 
@@ -79,7 +80,7 @@ class SaksbehandlingSteps() : No {
                 messages.add(packet)
             }
         }
-
+        rapidsConnection.start()
         log.info { "waiting" }
         delay(millis)
         log.info { "finished waiting" }
