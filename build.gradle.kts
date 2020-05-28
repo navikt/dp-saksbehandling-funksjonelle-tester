@@ -31,13 +31,12 @@ application {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation(kotlin("stdlib-jdk8"))
 
     implementation(Cucumber.java8)
     implementation(Cucumber.junit)
 
     implementation(kotlin("test"))
-    implementation(Junit5.api)
     implementation(KoTest.assertions)
     implementation(KoTest.runner)
 
