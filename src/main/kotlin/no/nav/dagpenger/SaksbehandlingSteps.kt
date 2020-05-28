@@ -55,27 +55,26 @@ class SaksbehandlingSteps() : No {
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
             runBlocking {
-                val messages = listenFor(2000L) {
-                    River(rapidsConnection).apply {
-                        validate { it.requireKey("aktørId") }
-                    }
+                val river = River(rapidsConnection).apply {
+                    validate { it.requireKey("aktørId") }
                 }
+
+                val messages = river.listenFor(10000L)
 
                 log.info { "messages size: ${messages.size}" }
 
                 messages.size shouldNotBe 0
-                log.info { "on branch" } // todo remove
             }
         }
     }
 
-    suspend fun listenFor(millis: Long, withRiverSetup: () -> River): List<JsonMessage> {
+    suspend fun River.listenFor(millis: Long): List<JsonMessage> {
         val messages = mutableListOf<JsonMessage>()
 
         GlobalScope.launch {
             object : River.PacketListener {
                 init {
-                    withRiverSetup().register(this)
+                    register(this)
                 }
 
                 override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
@@ -83,12 +82,9 @@ class SaksbehandlingSteps() : No {
                     messages.add(packet)
                 }
             }
-            rapidsConnection.start()
         }
 
         delay(millis)
-
-        rapidsConnection.stop()
 
         return messages
     }
