@@ -48,14 +48,13 @@ class SaksbehandlingSteps() : No {
 
         Når("vi skal vurdere søknaden") {
             sendToRapid(søknad)
-            rapidsConnection.stop()
             log.info { "publiserte søknadsmessage" }
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
             runBlocking {
                 val river = River(rapidsConnection).apply {
-                    validate { it.requireKey("aktørId") }
+                    /*validate { it.requireKey("aktørId") }*/
                 }
 
                 val messages = river.listenFor(10000L)
@@ -80,7 +79,7 @@ class SaksbehandlingSteps() : No {
                 messages.add(packet)
             }
         }
-        rapidsConnection.start()
+
         log.info { "waiting" }
         delay(millis)
         log.info { "finished waiting" }
