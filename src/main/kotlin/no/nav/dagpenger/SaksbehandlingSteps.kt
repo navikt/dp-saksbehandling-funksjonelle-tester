@@ -8,9 +8,7 @@ import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDateTime
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
@@ -71,20 +69,20 @@ class SaksbehandlingSteps() : No {
     suspend fun River.listenFor(millis: Long): List<JsonMessage> {
         val messages = mutableListOf<JsonMessage>()
 
-        GlobalScope.launch {
-            object : River.PacketListener {
-                init {
-                    register(this)
-                }
+        object : River.PacketListener {
+            init {
+                register(this)
+            }
 
-                override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                    log.info { "found packet" }
-                    messages.add(packet)
-                }
+            override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                log.info { "found packet" }
+                messages.add(packet)
             }
         }
 
+        log.info { "waiting" }
         delay(millis)
+        log.info { "finished waiting" }
 
         return messages
     }
