@@ -59,10 +59,10 @@ class SaksbehandlingSteps() : No {
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
+            Thread.sleep(5000)
+
             val consumer = createConsumer(Configuration.bootstrapServers)
             consumer.subscribe(listOf(Configuration.topic))
-
-            Thread.sleep(5000)
 
             log.info { "polling" }
 
