@@ -6,15 +6,20 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
-import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.shouldBe
+import java.io.File
+import java.time.Duration
 import java.time.LocalDateTime
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import java.util.Properties
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidApplication
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
+import org.apache.kafka.clients.CommonClientConfigs
+import org.apache.kafka.clients.consumer.Consumer
+import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.config.SaslConfigs
+import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.serialization.StringDeserializer
 
 private val log = KotlinLogging.logger {}
 
@@ -40,7 +45,7 @@ class SaksbehandlingSteps() : No {
                     "@id" to ULID().nextULID(),
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
-                    "fødselsnummer" to "12345678910",
+                    "fødselsnummer" to "***REMOVED***",
                     "aktørId" to aktørId,
                     "behandlingId" to ULID().nextULID()
             )
@@ -48,42 +53,56 @@ class SaksbehandlingSteps() : No {
 
         Når("vi skal vurdere søknaden") {
             sendToRapid(søknad)
+            rapidsConnection.stop()
             log.info { "publiserte søknadsmessage" }
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
-            runBlocking {
-                val river = River(rapidsConnection).apply {
-                    /*validate { it.requireKey("aktørId") }*/
-                }
+            val consumer = createConsumer(Configuration.bootstrapServers)
+            consumer.subscribe(listOf(Configuration.topic))
 
-                val messages = river.listenFor(10000L)
+            log.info { "polling" }
 
-                log.info { "messages size: ${messages.size}" }
+            val records = consumer.poll(Duration.ofSeconds(10L))
 
-                messages.size shouldNotBe 0
-            }
+            log.info { "records size ${records.count()}" }
+
+            records.asSequence().map { objectMapper.readTree(it.value()) }
+                    .filter { it["@event_name"].asText() == "vedtak_endret" }
+                    .any { it["aktørId"].asText() == aktørId } shouldBe true
         }
     }
 
-    suspend fun River.listenFor(millis: Long): List<JsonMessage> {
-        val messages = mutableListOf<JsonMessage>()
+    private fun createConsumer(brokers: String): Consumer<String, String> {
+        val props = Properties().apply {
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
+            put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true")
+            put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
+            put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, Configuration.resetPolicy)
+            put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokers)
+            put(ConsumerConfig.GROUP_ID_CONFIG, "dp-saksbehandling-funksjonelle-tester-tjafs3")
 
-        object : River.PacketListener {
-            init {
-                register(this)
-            }
+            put(SaslConfigs.SASL_MECHANISM, "PLAIN")
+            put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
+            put(
+                    SaslConfigs.SASL_JAAS_CONFIG,
+                    "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${Configuration.username}\" password=\"${Configuration.password}\";"
+            )
 
-            override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                log.info { "found packet" }
-                messages.add(packet)
+            val trustStoreLocation = System.getenv("NAV_TRUSTSTORE_PATH")
+            trustStoreLocation?.let {
+                try {
+                    put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
+                    put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(it).absolutePath)
+                    put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, System.getenv("NAV_TRUSTSTORE_PASSWORD"))
+                    log.info { "Configured '${SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG}' location " }
+                } catch (e: Exception) {
+                    log.error { "Failed to set '${SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG}' location " }
+                }
             }
         }
 
-        log.info { "waiting" }
-        delay(millis)
-        log.info { "finished waiting" }
-
-        return messages
+        return KafkaConsumer<String, String>(props)
     }
 }
