@@ -45,7 +45,7 @@ class SaksbehandlingSteps() : No {
                     "@id" to ULID().nextULID(),
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
-                    "fødselsnummer" to "12345678910",
+                    "fødselsnummer" to "***REMOVED***",
                     "aktørId" to aktørId,
                     "behandlingId" to ULID().nextULID()
             )
