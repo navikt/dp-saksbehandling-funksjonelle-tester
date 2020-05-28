@@ -31,7 +31,7 @@ application {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation(kotlin("stdlib-jdk8"))
 
     implementation(Cucumber.java8)
     implementation(Cucumber.junit)
