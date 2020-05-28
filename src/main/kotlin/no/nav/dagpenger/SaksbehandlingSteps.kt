@@ -68,6 +68,8 @@ class SaksbehandlingSteps() : No {
 
             val endOffsets = consumer.endOffsets(consumer.assignment())
 
+            log.info("endOffsets: $endOffsets")
+
             fun pendingMessages() = endOffsets.any { consumer.position(it.key) < it.value }
 
             val records = mutableListOf<ConsumerRecords<String, String>>()
