@@ -37,7 +37,6 @@ dependencies {
     implementation(Cucumber.junit)
 
     implementation(kotlin("test"))
-    implementation(Junit5.api)
     implementation(KoTest.assertions)
     implementation(KoTest.runner)
 
