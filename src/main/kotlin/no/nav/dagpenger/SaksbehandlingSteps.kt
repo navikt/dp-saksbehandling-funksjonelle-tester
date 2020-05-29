@@ -39,7 +39,7 @@ class SaksbehandlingSteps() : No {
             }
         }
     }.also {
-        GlobalScope.launch { it.start() }
+        val job = GlobalScope.launch { it.start() }
     }
 
     private val objectMapper = jacksonObjectMapper()
@@ -70,12 +70,14 @@ class SaksbehandlingSteps() : No {
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
 
-            log.info { "messages size: ${messages.size}" }
-
             log.info { "venter på pakker" }
             await.atMost(Duration.ofMinutes(5L)).untilAsserted {
                 messages.size shouldBeGreaterThan 0
             }
+
+            log.info { "finished" }
+            log.info { "messages size: ${messages.size}" }
+            rapidsConnection.stop()
         }
     }
 }
