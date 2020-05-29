@@ -6,10 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
-import io.kotest.matchers.shouldNotBe
 import java.time.Duration
 import java.time.LocalDateTime
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidApplication
