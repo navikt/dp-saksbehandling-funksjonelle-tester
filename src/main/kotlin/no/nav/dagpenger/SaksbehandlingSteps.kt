@@ -34,12 +34,11 @@ class SaksbehandlingSteps() : No {
             }
 
             override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                log.info { "packet found" }
                 messages.add(packet)
             }
         }
     }.also {
-        val job = GlobalScope.launch { it.start() }
+        GlobalScope.launch { it.start() }
     }
 
     private val objectMapper = jacksonObjectMapper()
@@ -71,12 +70,14 @@ class SaksbehandlingSteps() : No {
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
 
             log.info { "venter på pakker" }
+
             await.atMost(Duration.ofMinutes(5L)).untilAsserted {
-                messages.size shouldBeGreaterThan 0
+                messages
+                        .filter { it["aktørId"].asText() == aktørId }
+                        .filter { it["@event_name"].asText() == "vedtak_endret" }
+                        .size shouldBeGreaterThan 0
             }
 
-            log.info { "finished" }
-            log.info { "messages size: ${messages.size}" }
             rapidsConnection.stop()
         }
     }
