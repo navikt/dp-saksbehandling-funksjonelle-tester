@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import java.time.Duration
 import java.time.LocalDateTime
 import mu.KotlinLogging
@@ -13,7 +14,7 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
-import org.awaitility.Awaitility.await
+import org.awaitility.kotlin.await
 
 private val log = KotlinLogging.logger {}
 
@@ -66,8 +67,8 @@ class SaksbehandlingSteps() : No {
 
             log.info { "messages size: ${messages.size}" }
 
-            await().atMost(Duration.ofSeconds(5L)).until {
-                messages.size > 1
+            await.atMost(Duration.ofSeconds(5L)).untilAsserted {
+                messages.size shouldBeGreaterThan 0
             }
         }
     }
