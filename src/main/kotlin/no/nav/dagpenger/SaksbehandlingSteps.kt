@@ -9,6 +9,8 @@ import io.cucumber.java8.No
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import java.time.Duration
 import java.time.LocalDateTime
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidApplication
@@ -35,7 +37,9 @@ class SaksbehandlingSteps() : No {
                 messages.add(packet)
             }
         }
-    }.also { it.start() }
+    }.also {
+        GlobalScope.launch { it.start() }
+    }
 
     private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
