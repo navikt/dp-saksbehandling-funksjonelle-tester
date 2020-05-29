@@ -7,44 +7,57 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.ints.shouldBeGreaterThan
-import java.time.Duration
-import java.time.LocalDateTime
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.RapidApplication
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.*
 import org.awaitility.kotlin.await
+import java.time.Duration
+import java.time.LocalDateTime
 
 private val log = KotlinLogging.logger {}
 
 class SaksbehandlingSteps() : No {
     private lateinit var søknad: Map<String, String>
 
-    private val messages = mutableListOf<JsonMessage>()
+    companion object {
 
-    private val rapidsConnection = RapidApplication.Builder(
-            RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
-    ).build().also {
-        object : River.PacketListener {
-            init {
-                River(it).register(this)
-            }
+        private val objectMapper = jacksonObjectMapper()
+                .registerModule(JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-            override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                messages.add(packet)
-            }
-        }
-    }.also {
-        GlobalScope.launch { it.start() }
+        private val messages = mutableListOf<JsonMessage>()
+        private val rapidsConnection = RapidApplication.Builder(
+                RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
+        ).build()
+                .also {
+                    object : River.PacketListener {
+                        init {
+                            River(it).register(this)
+                        }
+
+                        override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                            log.info { "packet found" }
+                            messages.add(packet)
+                        }
+
+
+                        override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
+                            log.error { "Problems!! ->  ${problems}" }
+
+                        }
+
+                        override fun onSevere(error: MessageProblems.MessageException, context: RapidsConnection.MessageContext) {
+                            log.error(error) { "Something bad happen" }
+                        }
+                    }
+                }.also {
+                    GlobalScope.launch { it.start() }
+                }
     }
 
-    private val objectMapper = jacksonObjectMapper()
-            .registerModule(JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+
 
     fun sendToRapid(behov: Map<*, *>) {
         rapidsConnection.publish(objectMapper.writeValueAsString(behov))
@@ -77,8 +90,9 @@ class SaksbehandlingSteps() : No {
                         .filter { it["@event_name"].asText() == "vedtak_endret" }
                         .size shouldBeGreaterThan 0
             }
+            log.info { "finished" }
+            log.info { "messages size: ${messages.size}" }
 
-            rapidsConnection.stop()
         }
     }
 }
