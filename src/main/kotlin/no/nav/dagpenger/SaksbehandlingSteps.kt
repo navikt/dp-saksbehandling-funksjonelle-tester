@@ -7,23 +7,36 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
+import java.time.Duration
 import java.time.LocalDateTime
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import org.awaitility.Awaitility.await
 
 private val log = KotlinLogging.logger {}
 
 class SaksbehandlingSteps() : No {
     private lateinit var søknad: Map<String, String>
 
+    private val messages = mutableListOf<JsonMessage>()
+
     private val rapidsConnection = RapidApplication.Builder(
             RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
-    ).build().also { it.start() }
+    ).build().also {
+        object : River.PacketListener {
+            init {
+                River(it).register(this)
+            }
+
+            override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                messages.add(packet)
+            }
+        }
+    }.also { it.start() }
 
     private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
@@ -52,36 +65,12 @@ class SaksbehandlingSteps() : No {
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
-            runBlocking {
-                val river = River(rapidsConnection).apply {
-                    validate { it.requireKey("aktørId") }
-                }
 
-                val messages = river.listenFor(10000L)
+            log.info { "messages size: ${messages.size}" }
 
-                log.info { "messages size: ${messages.size}" }
-
-                messages.size shouldNotBe 0
+            await().atMost(Duration.ofSeconds(5L)).until {
+                messages.size > 1
             }
         }
-    }
-
-    suspend fun River.listenFor(millis: Long): List<JsonMessage> {
-        val messages = mutableListOf<JsonMessage>()
-
-        object : River.PacketListener {
-            init {
-                register(this)
-            }
-
-            override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                log.info { "found packet" }
-                messages.add(packet)
-            }
-        }
-
-        delay(millis)
-
-        return messages
     }
 }

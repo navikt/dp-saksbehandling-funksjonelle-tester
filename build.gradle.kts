@@ -36,6 +36,8 @@ dependencies {
     implementation(Cucumber.java8)
     implementation(Cucumber.junit)
 
+    implementation("org.awaitility:awaitility:4.0.3")
+
     implementation(kotlin("test"))
     implementation(KoTest.assertions)
     implementation(KoTest.runner)
