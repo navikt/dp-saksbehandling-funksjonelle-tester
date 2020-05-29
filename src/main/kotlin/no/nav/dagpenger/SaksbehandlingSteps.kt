@@ -71,7 +71,7 @@ class SaksbehandlingSteps() : No {
 
             log.info { "messages size: ${messages.size}" }
 
-            await.atMost(Duration.ofSeconds(5L)).untilAsserted {
+            await.atMost(Duration.ofMinutes(5L)).untilAsserted {
                 messages.size shouldBeGreaterThan 0
             }
         }

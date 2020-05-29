@@ -37,7 +37,7 @@ private fun config() = when (System.getenv("CUCUMBER_ENV") ?: System.getProperty
 }
 
 object Configuration {
-    val profile: Profile = config()[Key("profile", stringType)].let { Profile.valueOf(it) }
+    // val profile: Profile = config()[Key("profile", stringType)].let { Profile.valueOf(it) }
     val bootstrapServers = config()[Key("kafka.bootstrap.servers", stringType)]
     val topic = config()[Key("kafka.topic", stringType)]
     val resetPolicy = config()[Key("kafka.reset.policy", stringType)]
