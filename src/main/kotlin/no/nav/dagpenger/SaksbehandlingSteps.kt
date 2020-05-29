@@ -34,6 +34,7 @@ class SaksbehandlingSteps() : No {
             }
 
             override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                log.info { "packet found" }
                 messages.add(packet)
             }
         }
@@ -71,6 +72,7 @@ class SaksbehandlingSteps() : No {
 
             log.info { "messages size: ${messages.size}" }
 
+            log.info { "venter på pakker" }
             await.atMost(Duration.ofMinutes(5L)).untilAsserted {
                 messages.size shouldBeGreaterThan 0
             }
