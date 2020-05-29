@@ -73,7 +73,7 @@ class SaksbehandlingSteps() : No {
             log.info { "venter på pakker" }
 
             await.atMost(Duration.ofMinutes(5L)).untilAsserted {
-                messages
+                messages.toList()
                         .filter { it["aktørId"].asText() == aktørId }
                         .filter { it["@event_name"].asText() == "vedtak_endret" }
                         .size shouldBeGreaterThan 0
