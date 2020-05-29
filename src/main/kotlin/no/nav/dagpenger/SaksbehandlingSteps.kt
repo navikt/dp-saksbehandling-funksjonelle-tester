@@ -7,16 +7,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldNotBe
-import java.time.LocalDateTime
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import java.time.LocalDateTime
 
 private val log = KotlinLogging.logger {}
 
@@ -25,7 +23,7 @@ class SaksbehandlingSteps() : No {
 
     private val rapidsConnection = RapidApplication.Builder(
             RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
-    ).build()
+    ).build().also { it.start() }
 
     private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
@@ -71,18 +69,19 @@ class SaksbehandlingSteps() : No {
     suspend fun River.listenFor(millis: Long): List<JsonMessage> {
         val messages = mutableListOf<JsonMessage>()
 
-        GlobalScope.launch {
-            object : River.PacketListener {
-                init {
-                    register(this)
-                }
 
-                override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                    log.info { "found packet" }
-                    messages.add(packet)
-                }
+        object : River.PacketListener {
+            init {
+                register(this)
+            }
+
+            override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+                log.info { "found packet" }
+                messages.add(packet)
             }
         }
+
+
 
         delay(millis)
 
