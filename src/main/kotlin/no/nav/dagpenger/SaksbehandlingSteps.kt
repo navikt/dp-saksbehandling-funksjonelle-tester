@@ -6,7 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
-import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlinx.coroutines.GlobalScope
@@ -39,7 +39,7 @@ class SaksbehandlingSteps() : No {
                     }
 
                     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                        packet.interestedIn("aktørId", "@event_name")
+                        packet.interestedIn("aktørId", "gjeldendeTilstand")
                         messages.add(packet)
                     }
                 }
@@ -75,8 +75,7 @@ class SaksbehandlingSteps() : No {
             await.atMost(Duration.ofMinutes(5L)).untilAsserted {
                 messages.toList()
                         .filter { it["aktørId"].asText() == aktørId }
-                        .filter { it["@event_name"].asText() == "vedtak_endret" }
-                        .size shouldBeGreaterThan 0
+                        .any { it["gjeldendeTilstand"].asText() == "TilArena" } shouldBe true
             }
             log.info { "finished" }
             log.info { "messages size: ${messages.size}" }
