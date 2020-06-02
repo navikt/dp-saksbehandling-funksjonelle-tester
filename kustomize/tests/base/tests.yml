@@ -4,7 +4,6 @@ metadata:
   name: saksbehandling-funksjonelle-tester
 spec:
   backoffLimit: 2
-  ttlSecondsAfterFinished: 5
   template:
     spec:
       imagePullSecrets:
