@@ -32,14 +32,15 @@ class SaksbehandlingSteps() : No {
     private val rapidsConnection = RapidApplication.Builder(
             RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
     ).build()
-            .also {
+            .also { rapidsConnection ->
                 object : River.PacketListener {
                     init {
-                        River(it).register(this)
+                        River(rapidsConnection).apply {
+                            validate { it.requireKey("aktørId", "gjeldendeTilstand") }
+                        }.register(this)
                     }
 
                     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-                        packet.interestedIn("aktørId", "gjeldendeTilstand")
                         messages.add(packet)
                     }
                 }
