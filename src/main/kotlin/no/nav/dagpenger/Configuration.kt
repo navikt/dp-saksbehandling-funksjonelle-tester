@@ -1,7 +1,7 @@
 package no.nav.dagpenger
 
 import com.natpryce.konfig.* // ktlint-disable no-wildcard-imports
-import com.natpryce.konfig.ConfigurationProperties.Companion.fromOptionalFile
+import com.natpryce.konfig.ConfigurationProperties.Companion.fromFile
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -31,7 +31,7 @@ private val devProperties = ConfigurationMap(
 )
 
 private fun config() = when (System.getenv("CUCUMBER_ENV") ?: System.getProperty("CUCUMBER_ENV")) {
-    "dev" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding fromOptionalFile(File("/var/run/secrets/nais.io/test_data/brukere")) overriding devProperties
+    "dev" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding fromFile(File("/var/run/secrets/nais.io/test_data/brukere")) overriding devProperties
     else -> {
         ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding localProperties
     }
