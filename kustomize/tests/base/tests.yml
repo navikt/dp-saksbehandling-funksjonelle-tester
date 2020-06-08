@@ -26,6 +26,7 @@ spec:
           - -vault=https://vault.adeo.no
           - -one-shot
           - -cn=secret:serviceuser/data/dev/srvdp-funk-test:dir=/var/run/secrets/nais.io/service_user,fmt=flatten
+          - -cn=secret:secret/teamdagpenger/testdata/saksbehandling/:dir=/var/run/secrets/nais.io/test_data,fmt=flatten
           env:
           - name: VAULT_AUTH_METHOD
             value: kubernetes
@@ -40,6 +41,9 @@ spec:
           - mountPath: /var/run/secrets/nais.io/service_user
             name: vault-secrets
             subPath: subpath/var/run/secrets/nais.io/service_user
+          - mountPath: /var/run/secrets/nais.io/test_data
+            name: vault-secrets
+            subPath: subpath/var/run/secrets/nais.io/test_data
       containers:
         - name: dp-saksbehandling-funksjonelle-tester
           resources:

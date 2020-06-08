@@ -52,13 +52,13 @@ class SaksbehandlingSteps() : No {
     }
 
     init {
-        Gitt("en søker med aktørid {string}") { aktørId: String ->
+        Gitt("en søker med aktørid {string}") { aktørIdKey: String ->
             søknad = mapOf(
                     "@id" to ULID().nextULID(),
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
-                    "fødselsnummer" to "***REMOVED***",
-                    "aktørId" to aktørId,
+                    "fødselsnummer" to Configuration.testbrukere["flere.arbeidsforhold.fnr"]!!,
+                    "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
                     "behandlingId" to "GYLDIG_SOKNAD"
             )
         }
@@ -68,13 +68,13 @@ class SaksbehandlingSteps() : No {
             log.info { "publiserte søknadsmessage" }
         }
 
-        Så("må søknaden for aktørid {string} manuelt behandles") { aktørId: String ->
+        Så("må søknaden for aktørid {string} manuelt behandles") { aktørIdKey: String ->
 
             log.info { "venter på pakker" }
 
             await.atMost(Duration.ofMinutes(5L)).untilAsserted {
                 messages.toList()
-                        .filter { it["aktørId"].asText() == aktørId }
+                        .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
                         .any { it["gjeldendeTilstand"].asText() == "TilArena" } shouldBe true
             }
             log.info { "finished" }

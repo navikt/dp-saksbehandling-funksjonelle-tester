@@ -1,6 +1,7 @@
 package no.nav.dagpenger
 
 import com.natpryce.konfig.* // ktlint-disable no-wildcard-imports
+import com.natpryce.konfig.ConfigurationProperties.Companion.fromOptionalFile
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -30,7 +31,7 @@ private val devProperties = ConfigurationMap(
 )
 
 private fun config() = when (System.getenv("CUCUMBER_ENV") ?: System.getProperty("CUCUMBER_ENV")) {
-    "dev" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding devProperties
+    "dev" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding fromOptionalFile(File("/var/run/secrets/nais.io/test_data/brukere")) overriding devProperties
     else -> {
         ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding localProperties
     }
@@ -53,6 +54,12 @@ object Configuration {
             "NAV_TRUSTSTORE_PATH" to config()[Key("nav.truststore.path", stringType)],
             "NAV_TRUSTSTORE_PASSWORD" to config()[Key("nav.truststore.password", stringType)]
     )
+
+    val testbrukere: Map<String, String> =
+            mapOf(
+                    "flere.arbeidsforhold.fnr" to config()[Key("flere.arbeidsforhold.fnr", stringType)],
+                    "flere.arbeidsforhold.aktoerid" to config()[Key("flere.arbeidsforhold.aktoerid", stringType)]
+            )
 }
 
 enum class Profile {
