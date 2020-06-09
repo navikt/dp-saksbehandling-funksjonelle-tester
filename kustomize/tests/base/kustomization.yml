@@ -2,7 +2,7 @@ bases:
   - github.com/navikt/dp-kustomize
 
 # Adds namespace to all resources.
-namespace: dagpenger-test
+namespace: teamdagpenger
 commonLabels:
   team: teamdagpenger
 
