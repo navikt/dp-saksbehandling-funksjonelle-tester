@@ -9,6 +9,7 @@ plugins {
 buildscript {
     repositories {
         jcenter()
+        maven("https://jitpack.io")
     }
 }
 
@@ -18,7 +19,10 @@ apply {
 
 repositories {
     mavenCentral()
+    jcenter()
+    maven("http://packages.confluent.io/maven/")
     maven("https://jitpack.io")
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
 val gitVersion: groovy.lang.Closure<Any> by extra
