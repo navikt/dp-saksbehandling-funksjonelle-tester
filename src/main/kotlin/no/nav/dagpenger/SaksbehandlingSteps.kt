@@ -60,7 +60,7 @@ class SaksbehandlingSteps() : No {
                     "@opprettet" to LocalDateTime.now().toString(),
                     "fødselsnummer" to Configuration.testbrukere["flere.arbeidsforhold.fnr"]!!,
                     "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
-                    "behandlingId" to "GYLDIG_SOKNAD"
+                    "søknadsId" to "GYLDIG_SOKNAD"
             )
         }
 
