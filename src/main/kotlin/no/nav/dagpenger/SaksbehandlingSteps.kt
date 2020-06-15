@@ -81,8 +81,9 @@ class SaksbehandlingSteps() : No {
         Så("kan søknaden for aktørid {string} automatisk innvilges") { aktørIdKey: String ->
             await.atMost(Duration.ofSeconds(30L)).untilAsserted {
                 messages.toList()
-                    .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
+                    .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }.also { log.info { "list size: ${it.size}" } }
                     .any { it["gjeldendeTilstand"].asText() == "VedtakFattet" } shouldBe true
+
             }
         }
     }
