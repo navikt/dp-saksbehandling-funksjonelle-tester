@@ -63,7 +63,7 @@ class SaksbehandlingSteps() : No {
                     "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
                     "søknadsId" to "GYLDIG_SOKNAD"
             )
-            log.info { "lager søknad for $aktørIdKey med id $id "}
+            log.info { "lager søknad for $aktørIdKey med id $id " }
         }
 
         Når("vi skal vurdere søknaden") {
