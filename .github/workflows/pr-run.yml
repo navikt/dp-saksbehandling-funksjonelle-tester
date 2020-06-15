@@ -25,7 +25,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build --info
       - name: Build and Publish Docker image
-        if: github.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
