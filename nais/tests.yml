@@ -66,6 +66,7 @@ spec:
           - name: NAV_TRUSTSTORE_PASSWORD
             value: changeme
 
+          image: {{image}}
           imagePullPolicy: Always
           volumeMounts:
           - mountPath: /etc/ssl/certs/ca-certificates.crt
