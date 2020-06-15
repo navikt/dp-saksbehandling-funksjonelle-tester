@@ -9,4 +9,4 @@ Egenskap: Saksbehandling
   Scenario: Søknad som kan gi automatisk innvilgelse
     Gitt en søker med aktørid "happy.path.aktoerid" og fødselsnummer "happy.path.fnr"
     Når vi skal vurdere søknaden
-    Så kan søknaden for aktørid ""happy.path.aktoerid" automatisk innvilges
+    Så kan søknaden for aktørid "happy.path.aktoerid" automatisk innvilges
