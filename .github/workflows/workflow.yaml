@@ -51,6 +51,5 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: nais/tests.yml
-          VARS: nais/vars.yaml
           PRINT_PAYLOAD: true
         timeout-minutes: 5

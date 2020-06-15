@@ -1,10 +1,10 @@
 apiVersion: batch/v1beta1
 kind: Job
 metadata:
-  name: {{name}}
-  namespace: {{namespace}}
+  name: dp-saksbehandling-funksjonelle-tester
+  namespace: teamdagpenger
   labels:
-    team: {{team}}
+    team: teamdagpenger
 spec:
   image: {{image}}
   backoffLimit: 2
