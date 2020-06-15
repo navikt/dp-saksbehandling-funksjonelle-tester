@@ -76,7 +76,7 @@ class SaksbehandlingSteps() : No {
             await.atMost(Duration.ofSeconds(30L)).untilAsserted {
                 messages.toList()
                         .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
-                        .any { it["gjeldendeTilstand"].asText() == "TilArena" } shouldBe true
+                        .any { it["gjeldendeTilstand"].asText() == "IkkeTilArena" } shouldBe true
             }
             log.info { "finished" }
             log.info { "messages size: ${messages.size}" }
