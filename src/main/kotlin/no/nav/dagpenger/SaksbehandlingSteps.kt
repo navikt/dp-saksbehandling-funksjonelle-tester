@@ -21,17 +21,16 @@ import org.awaitility.kotlin.await
 private val log = KotlinLogging.logger {}
 
 class SaksbehandlingSteps() : No {
-    private lateinit var søknad: Map<String, String>
-
-    private val objectMapper = jacksonObjectMapper()
+    companion object {
+        private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-    private val messages = mutableListOf<JsonMessage>()
-    private val rapidsConnection = RapidApplication.Builder(
+        private val messages = mutableListOf<JsonMessage>()
+        private val rapidsConnection = RapidApplication.Builder(
             RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
-    ).build()
+        ).build()
             .also { rapidsConnection ->
                 object : River.PacketListener {
                     init {
@@ -48,38 +47,45 @@ class SaksbehandlingSteps() : No {
                 GlobalScope.launch { it.start() }
             }
 
-    fun sendToRapid(behov: Map<*, *>) {
-        rapidsConnection.publish(objectMapper.writeValueAsString(behov))
+        fun sendToRapid(behov: Map<*, *>) {
+            rapidsConnection.publish(objectMapper.writeValueAsString(behov))
+        }
     }
+    private lateinit var søknad: Map<String, String>
 
     init {
-        Gitt("en søker med aktørid {string}") { aktørIdKey: String ->
+        Gitt("en søker med aktørid {string} og fødselsnummer {string}") { aktørIdKey: String, fødselsnummerKey: String ->
+            val id = ULID().nextULID()
             søknad = mapOf(
-                    "@id" to ULID().nextULID(),
+                    "@id" to id,
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
-                    "fødselsnummer" to Configuration.testbrukere["flere.arbeidsforhold.fnr"]!!,
+                    "fødselsnummer" to Configuration.testbrukere[fødselsnummerKey]!!,
                     "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
                     "søknadsId" to "GYLDIG_SOKNAD"
             )
+            log.info { "lager søknad for $aktørIdKey med id $id " }
         }
 
         Når("vi skal vurdere søknaden") {
             sendToRapid(søknad)
-            log.info { "publiserte søknadsmessage" }
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørIdKey: String ->
-
-            log.info { "venter på pakker" }
-
             await.atMost(Duration.ofSeconds(30L)).untilAsserted {
                 messages.toList()
                         .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
                         .any { it["gjeldendeTilstand"].asText() == "TilArena" } shouldBe true
             }
-            log.info { "finished" }
-            log.info { "messages size: ${messages.size}" }
+        }
+
+        Så("kan søknaden for aktørid {string} automatisk innvilges") { aktørIdKey: String ->
+            await.atMost(Duration.ofSeconds(30L)).untilAsserted {
+                messages.toList()
+                    .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }.also { log.info { "list size: ${it.size}" } }
+                    .any { it["gjeldendeTilstand"].asText() == "VedtakFattet" } shouldBe true
+            }
+            log.info { "Message size ${messages.size}" }
         }
     }
 }
