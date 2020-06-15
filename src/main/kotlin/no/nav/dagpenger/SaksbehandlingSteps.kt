@@ -21,17 +21,16 @@ import org.awaitility.kotlin.await
 private val log = KotlinLogging.logger {}
 
 class SaksbehandlingSteps() : No {
-    private lateinit var søknad: Map<String, String>
-
-    private val objectMapper = jacksonObjectMapper()
+    companion object {
+        private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-    private val messages = mutableListOf<JsonMessage>()
-    private val rapidsConnection = RapidApplication.Builder(
+        private val messages = mutableListOf<JsonMessage>()
+        private val rapidsConnection = RapidApplication.Builder(
             RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidApplication)
-    ).build()
+        ).build()
             .also { rapidsConnection ->
                 object : River.PacketListener {
                     init {
@@ -48,9 +47,11 @@ class SaksbehandlingSteps() : No {
                 GlobalScope.launch { it.start() }
             }
 
-    fun sendToRapid(behov: Map<*, *>) {
-        rapidsConnection.publish(objectMapper.writeValueAsString(behov))
+        fun sendToRapid(behov: Map<*, *>) {
+            rapidsConnection.publish(objectMapper.writeValueAsString(behov))
+        }
     }
+    private lateinit var søknad: Map<String, String>
 
     init {
         Gitt("en søker med aktørid {string} og fødselsnummer {string}") { aktørIdKey: String, fødselsnummerKey: String ->
@@ -84,6 +85,7 @@ class SaksbehandlingSteps() : No {
                     .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }.also { log.info { "list size: ${it.size}" } }
                     .any { it["gjeldendeTilstand"].asText() == "VedtakFattet" } shouldBe true
             }
+            log.info { "Message size ${messages.size}" }
         }
     }
 }
