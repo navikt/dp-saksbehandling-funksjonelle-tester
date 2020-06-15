@@ -24,9 +24,7 @@ private val devProperties = ConfigurationMap(
                 "profile" to Profile.DEV.toString(),
                 "kafka.bootstrap.servers" to "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
                 "kafka.topic" to TOPIC,
-                "kafka.reset.policy" to "latest",
-                "username" to "/var/run/secrets/nais.io/service_user/username".readFile()!!,
-                "password" to "/var/run/secrets/nais.io/service_user/password".readFile()!!
+                "kafka.reset.policy" to "latest"
         )
 )
 
@@ -43,9 +41,6 @@ object Configuration {
     val topic = config()[Key("kafka.topic", stringType)]
     val resetPolicy = config()[Key("kafka.reset.policy", stringType)]
 
-    val username = config()[Key("username", stringType)]
-    val password = config()[Key("password", stringType)]
-
     val rapidApplication: Map<String, String> = mapOf(
             "KAFKA_BOOTSTRAP_SERVERS" to bootstrapServers,
             "KAFKA_CONSUMER_GROUP_ID" to "dp-saksbehandling-funksjonelle-tester-tjafs2",
@@ -58,7 +53,9 @@ object Configuration {
     val testbrukere: Map<String, String> =
             mapOf(
                     "flere.arbeidsforhold.fnr" to config()[Key("flere.arbeidsforhold.fnr", stringType)],
-                    "flere.arbeidsforhold.aktoerid" to config()[Key("flere.arbeidsforhold.aktoerid", stringType)]
+                    "flere.arbeidsforhold.aktoerid" to config()[Key("flere.arbeidsforhold.aktoerid", stringType)],
+                    "happy.path.aktoerid" to config()[Key("happy.path.aktoerid", stringType)],
+                    "happy.path.fnr" to config()[Key("happy.path.fnr", stringType)]
             )
 }
 

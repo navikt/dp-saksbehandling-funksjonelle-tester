@@ -53,12 +53,12 @@ class SaksbehandlingSteps() : No {
     }
 
     init {
-        Gitt("en søker med aktørid {string}") { aktørIdKey: String ->
+        Gitt("en søker med aktørid {string} og fødselsnummer {string}") { aktørIdKey: String, fødselsnummerKey: String ->
             søknad = mapOf(
                     "@id" to ULID().nextULID(),
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
-                    "fødselsnummer" to Configuration.testbrukere["flere.arbeidsforhold.fnr"]!!,
+                    "fødselsnummer" to Configuration.testbrukere[fødselsnummerKey]!!,
                     "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
                     "søknadsId" to "GYLDIG_SOKNAD"
             )
@@ -77,6 +77,19 @@ class SaksbehandlingSteps() : No {
                 messages.toList()
                         .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
                         .any { it["gjeldendeTilstand"].asText() == "TilArena" } shouldBe true
+            }
+            log.info { "finished" }
+            log.info { "messages size: ${messages.size}" }
+        }
+
+        Så(" kan søknaden for aktørid {string} automatisk innvilges") { aktørIdKey: String ->
+
+            log.info { "venter på pakker" }
+
+            await.atMost(Duration.ofSeconds(30L)).untilAsserted {
+                messages.toList()
+                    .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
+                    .any { it["gjeldendeTilstand"].asText() == "VedtakFattet" } shouldBe true
             }
             log.info { "finished" }
             log.info { "messages size: ${messages.size}" }
