@@ -1,8 +1,12 @@
-apiVersion: batch/v1
+apiVersion: nais.io/v1alpha1
 kind: Job
 metadata:
-  name: saksbehandling-funksjonelle-tester
+  name: {{name}}
+  namespace: {{namespace}}
+  labels:
+    team: {{team}}
 spec:
+  image: {{image}}
   backoffLimit: 2
   ttlSecondsAfterFinished: 5
   template:
