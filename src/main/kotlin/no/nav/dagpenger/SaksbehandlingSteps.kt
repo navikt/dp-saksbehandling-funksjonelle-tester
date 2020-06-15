@@ -83,7 +83,6 @@ class SaksbehandlingSteps() : No {
                 messages.toList()
                     .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }.also { log.info { "list size: ${it.size}" } }
                     .any { it["gjeldendeTilstand"].asText() == "VedtakFattet" } shouldBe true
-
             }
         }
     }
