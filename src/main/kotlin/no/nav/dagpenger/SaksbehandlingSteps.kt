@@ -82,7 +82,7 @@ class SaksbehandlingSteps() : No {
             log.info { "messages size: ${messages.size}" }
         }
 
-        Så(" kan søknaden for aktørid {string} automatisk innvilges") { aktørIdKey: String ->
+        Så("kan søknaden for aktørid {string} automatisk innvilges") { aktørIdKey: String ->
 
             log.info { "venter på pakker" }
 
