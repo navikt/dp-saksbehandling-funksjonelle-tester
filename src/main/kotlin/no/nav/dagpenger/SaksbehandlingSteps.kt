@@ -54,45 +54,36 @@ class SaksbehandlingSteps() : No {
 
     init {
         Gitt("en søker med aktørid {string} og fødselsnummer {string}") { aktørIdKey: String, fødselsnummerKey: String ->
+            val id = ULID().nextULID()
             søknad = mapOf(
-                    "@id" to ULID().nextULID(),
+                    "@id" to id,
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
                     "fødselsnummer" to Configuration.testbrukere[fødselsnummerKey]!!,
                     "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
                     "søknadsId" to "GYLDIG_SOKNAD"
             )
+            log.info { "lager søknad for $aktørIdKey med id $id "}
         }
 
         Når("vi skal vurdere søknaden") {
             sendToRapid(søknad)
-            log.info { "publiserte søknadsmessage" }
         }
 
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørIdKey: String ->
-
-            log.info { "venter på pakker" }
-
             await.atMost(Duration.ofSeconds(30L)).untilAsserted {
                 messages.toList()
                         .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
                         .any { it["gjeldendeTilstand"].asText() == "TilArena" } shouldBe true
             }
-            log.info { "finished" }
-            log.info { "messages size: ${messages.size}" }
         }
 
         Så("kan søknaden for aktørid {string} automatisk innvilges") { aktørIdKey: String ->
-
-            log.info { "venter på pakker" }
-
             await.atMost(Duration.ofSeconds(30L)).untilAsserted {
                 messages.toList()
                     .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
                     .any { it["gjeldendeTilstand"].asText() == "VedtakFattet" } shouldBe true
             }
-            log.info { "finished" }
-            log.info { "messages size: ${messages.size}" }
         }
     }
 }
