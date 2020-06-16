@@ -3,7 +3,7 @@ name: Run tests
 on:
   schedule:
     # Run every hour
-    - cron: '5 * * * *'
+    - cron: '*/10 * * * *'
 
 env:
   IMAGE: "docker.pkg.github.com/${{ github.repository }}/dp-saksbehandling-funksjonelle-tester:${{ github.sha }}"
