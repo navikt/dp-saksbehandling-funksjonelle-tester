@@ -1,8 +1,8 @@
-name: Run tests
+name: Cron job
 
 on:
   schedule:
-    # Run every hour
+    # Run every 10 minutes
     - cron: '*/10 * * * *'
 
 env:
@@ -12,11 +12,6 @@ jobs:
     name: Run tests as a Job
     runs-on: ubuntu-latest
     continue-on-error: true
-    env:
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      SLACK_USERNAME: dp-funksjonelle-tester
-      SLACK_ICON_EMOJI: ':male-scientist:'
-      MSG_MINIMAL: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -34,9 +29,6 @@ jobs:
           SLACK_COLOR: '#FF0000'
           SLACK_TITLE:  'Test run failed'
           SLACK_MESSAGE: 'De funksjonelle testene feilet :sadcat:'
-      - name: Notify of success
-        if: ${{ success() }}
-        uses: rtCamp/action-slack-notify@v2.0.2
-        env:
-          SLACK_TITLE:  'Test run passed'
-          SLACK_MESSAGE: 'De funksjonelle testene passerte :medal:'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: dp-funksjonelle-tester
+          SLACK_ICON_EMOJI: ':male-scientist:'
