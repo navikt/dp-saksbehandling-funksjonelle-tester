@@ -1,0 +1,25 @@
+name: Build and deploy
+
+on:
+  repository_dispatch:
+    types: run
+
+env:
+  IMAGE: "docker.pkg.github.com/${{ github.repository }}/dp-saksbehandling-funksjonelle-tester:${{ github.sha }}"
+jobs:
+  run:
+    name: Run tests as a Job
+    runs-on: ubuntu-latest
+    id: run
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais/tests.yml
+          PRINT_PAYLOAD: true
+        timeout-minutes: 5
+
