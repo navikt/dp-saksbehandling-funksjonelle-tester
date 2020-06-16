@@ -11,6 +11,9 @@ jobs:
     name: Run tests as a Job
     runs-on: ubuntu-latest
     continue-on-error: true
+    env:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      SLACK_USERNAME: dp-funksjonelle-tester
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -21,13 +24,6 @@ jobs:
           RESOURCE: nais/tests.yml
           PRINT_PAYLOAD: true
         timeout-minutes: 5
-  slackNotification:
-    name: Slack Notification
-    runs-on: ubuntu-latest
-    env:
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      SLACK_USERNAME: dp-funksjonelle-tester
-    steps:
       - name: Notify of failure
         if: ${{ failure() }}
         uses: rtCamp/action-slack-notify@v2.0.2
@@ -41,5 +37,3 @@ jobs:
         env:
           SLACK_TITLE:  'Test run passed'
           SLACK_MESSAGE: 'De funksjonelle testene passerte :medal:'
-
-
