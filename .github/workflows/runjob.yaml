@@ -21,6 +21,11 @@ jobs:
           RESOURCE: nais/tests.yml
           PRINT_PAYLOAD: true
         timeout-minutes: 5
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
