@@ -31,7 +31,7 @@ jobs:
           SLACK_COLOR: '#FF0000'
           SLACK_TITLE:  'Test run failed'
           SLACK_MESSAGE: 'De funksjonelle testene feilet :sadcat:'
-      - name: Notify of failure
+      - name: Notify of success
         if: ${{ success() }}
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
