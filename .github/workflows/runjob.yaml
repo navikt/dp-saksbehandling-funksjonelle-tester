@@ -1,8 +1,9 @@
 name: Run tests
 
 on:
-  repository_dispatch:
-    types: run
+  schedule:
+    # Run every hour
+    - cron: '5 * * * *'
 
 env:
   IMAGE: "docker.pkg.github.com/${{ github.repository }}/dp-saksbehandling-funksjonelle-tester:${{ github.sha }}"
