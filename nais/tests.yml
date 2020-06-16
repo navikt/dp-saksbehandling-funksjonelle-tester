@@ -5,6 +5,7 @@ metadata:
   namespace: teamdagpenger
   labels:
     team: teamdagpenger
+    app: {{ app }}
 spec:
   image: {{image}}
   backoffLimit: 2
