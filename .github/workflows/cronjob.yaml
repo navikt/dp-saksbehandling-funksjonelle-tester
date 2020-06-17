@@ -22,6 +22,7 @@ jobs:
           RESOURCE: nais/tests.yml
           VAR: app=cronjob
           PRINT_PAYLOAD: true
+        timeout-minutes: 8
       - name: Notify of failure
         if: ${{ failure() }}
         uses: rtCamp/action-slack-notify@v2.0.2
