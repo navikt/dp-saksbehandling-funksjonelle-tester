@@ -9,7 +9,6 @@ metadata:
 spec:
   image: {{image}}
   backoffLimit: 2
-  ttlSecondsAfterFinished: 5
   template:
     spec:
       imagePullSecrets:
