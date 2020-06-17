@@ -52,6 +52,5 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: nais/tests.yml
           PRINT_PAYLOAD: true
-          VARS: nais/vars.yml
           VAR: app=dp-saksbehandling-funksjonelle-tester
         timeout-minutes: 5
