@@ -9,7 +9,11 @@ metadata:
 spec:
   image: {{image}}
   backoffLimit: 2
+  ttlSecondsAfterFinished: 600
   template:
+    metadata:
+      labels:
+        app: {{ app }}
     spec:
       imagePullSecrets:
         - name: gpr-credentials
