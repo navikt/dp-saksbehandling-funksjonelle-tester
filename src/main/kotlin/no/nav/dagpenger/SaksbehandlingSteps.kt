@@ -35,7 +35,8 @@ class SaksbehandlingSteps() : No {
                 object : River.PacketListener {
                     init {
                         River(rapidsConnection).apply {
-                            validate { it.requireKey("aktørId", "gjeldendeTilstand") }
+                            validate { it.requireAny("aktørId", Configuration.testbrukere.values.toList()) }
+                            validate { it.requireAny("gjeldendeTilstand", listOf("TilArena", "VedtakFattet")) }
                         }.register(this)
                     }
 
