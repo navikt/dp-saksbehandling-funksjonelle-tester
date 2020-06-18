@@ -37,8 +37,7 @@ application {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
-    implementation(Cucumber.java8)
-    implementation(Cucumber.junit)
+    implementation("io.cucumber:cucumber-java8:6.1.1")
 
     implementation("org.awaitility:awaitility-kotlin:4.0.3")
 

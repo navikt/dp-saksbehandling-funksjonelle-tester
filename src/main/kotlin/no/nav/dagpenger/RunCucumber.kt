@@ -6,10 +6,9 @@ val args = arrayOf(
     "--threads", "2",
     "-g", "no.nav.dagpenger",
     "-p", "pretty",
-    "--strict",
     "classpath:features",
     "--tags", "not @ignored ")
 
 fun main() {
-    Main.main(args)
+    Main.main(*args)
 }
