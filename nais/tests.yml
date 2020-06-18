@@ -1,20 +1,19 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{app}}-sb-funk-test
+  name: dp-saksbehandling-funksjonelle-tester
   namespace: teamdagpenger
   labels:
     team: teamdagpenger
-    type: dp-saksbehandling-funksjonelle-tester
-    app: {{app}}-sb-funk-test
+    app: {{app}}
 spec:
+  image: {{image}}
   backoffLimit: 2
-  ttlSecondsAfterFinished: 300
+  ttlSecondsAfterFinished: 600
   template:
     metadata:
       labels:
-        app: {{app}}-sb-funk-test
-        type: dp-saksbehandling-funksjonelle-tester
+        app: {{app}}
     spec:
       imagePullSecrets:
         - name: gpr-credentials
