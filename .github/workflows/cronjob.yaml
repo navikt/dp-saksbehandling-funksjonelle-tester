@@ -32,3 +32,4 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_USERNAME: dp-funksjonelle-tester
           SLACK_ICON_EMOJI: ':male-scientist:'
+          MSG_MINIMAL: true
