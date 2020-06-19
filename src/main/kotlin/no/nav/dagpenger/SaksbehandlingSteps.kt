@@ -57,15 +57,16 @@ class SaksbehandlingSteps() : No {
     init {
         Gitt("en søker med aktørid {string} og fødselsnummer {string}") { aktørIdKey: String, fødselsnummerKey: String ->
             val id = ULID().nextULID()
+            val søknadsId = ULID().nextULID()
             søknad = mapOf(
                     "@id" to id,
                     "@event_name" to "Søknad",
                     "@opprettet" to LocalDateTime.now().toString(),
                     "fødselsnummer" to Configuration.testbrukere[fødselsnummerKey]!!,
                     "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
-                    "søknadsId" to "GYLDIG_SOKNAD"
+                    "søknadsId" to søknadsId
             )
-            log.info { "lager søknad for $aktørIdKey med id $id " }
+            log.info { "lager søknad for $aktørIdKey med id $id og søknadsid $søknadsId" }
         }
 
         Når("vi skal vurdere søknaden") {
