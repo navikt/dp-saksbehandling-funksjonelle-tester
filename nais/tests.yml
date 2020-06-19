@@ -18,6 +18,7 @@ spec:
         app: dp-saksbehandling-funksjonelle-tester
         jobcreator: {{app}}
     spec:
+      ttlSecondsAfterFinished: 600
       imagePullSecrets:
         - name: gpr-credentials
       serviceAccountName: default
