@@ -5,15 +5,17 @@ metadata:
   namespace: teamdagpenger
   labels:
     team: teamdagpenger
-    app: {{app}}
+    app: dp-saksbehandling-funksjonelle-tester
+    jobcreator: {{app}}
 spec:
-  image: {{image}}
   backoffLimit: 2
   ttlSecondsAfterFinished: 600
   template:
     metadata:
       labels:
-        app: {{app}}
+        team: teamdagpenger
+        app: dp-saksbehandling-funksjonelle-tester
+        jobcreator: {{app}}
     spec:
       imagePullSecrets:
         - name: gpr-credentials
