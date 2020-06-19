@@ -2,8 +2,8 @@ name: Cron job
 
 on:
   schedule:
-    # Run every 10 minutes
-    - cron: '*/10 * * * *'
+    # Run once every day
+    - cron: '0 1 * * *'
 
 env:
   IMAGE: "docker.pkg.github.com/${{ github.repository }}/dp-saksbehandling-funksjonelle-tester:${{ github.sha }}"
