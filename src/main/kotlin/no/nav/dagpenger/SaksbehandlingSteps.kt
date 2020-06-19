@@ -7,6 +7,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldBe
+import java.time.Duration
+import java.time.LocalDateTime
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -15,8 +17,6 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import org.awaitility.kotlin.await
-import java.time.Duration
-import java.time.LocalDateTime
 
 private val log = KotlinLogging.logger {}
 
@@ -59,7 +59,7 @@ class SaksbehandlingSteps() : No {
         Gitt("en søker med aktørid {string} og fødselsnummer {string}") { aktørIdKey: String, fødselsnummerKey: String ->
             val id = ULID().nextULID()
             val søknadsId = "GYLDIG_SOKNAD"
-            søknad = mapOf (
+            søknad = mapOf(
                 "@id" to id,
                 "@event_name" to "Søknad",
                 "@opprettet" to LocalDateTime.now().toString(),
