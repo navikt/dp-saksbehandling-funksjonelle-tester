@@ -57,7 +57,7 @@ class SaksbehandlingSteps() : No {
     init {
         Gitt("en søker med aktørid {string} og fødselsnummer {string}") { aktørIdKey: String, fødselsnummerKey: String ->
             val id = ULID().nextULID()
-            val søknadsId = ULID().nextULID()
+            val søknadsId = "GYLDIG_SOKNAD"
             søknad = mapOf(
                     "@id" to id,
                     "@event_name" to "Søknad",
