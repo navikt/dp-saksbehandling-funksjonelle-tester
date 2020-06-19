@@ -23,7 +23,7 @@ jobs:
           PRINT_PAYLOAD: true
         timeout-minutes: 8
       - name: Notify of failure
-        if: ${{ failure() }}
+        if: ${{ 1 == 2 }}
         uses: rtCamp/action-slack-notify@v2.0.2
         env:
           SLACK_COLOR: '#FF0000'
