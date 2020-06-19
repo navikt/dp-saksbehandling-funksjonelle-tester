@@ -7,8 +7,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.huxhorn.sulky.ulid.ULID
 import io.cucumber.java8.No
 import io.kotest.matchers.shouldBe
-import java.time.Duration
-import java.time.LocalDateTime
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -17,6 +15,8 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import org.awaitility.kotlin.await
+import java.time.Duration
+import java.time.LocalDateTime
 
 private val log = KotlinLogging.logger {}
 
@@ -52,19 +52,21 @@ class SaksbehandlingSteps() : No {
             rapidsConnection.publish(objectMapper.writeValueAsString(behov))
         }
     }
-    private lateinit var søknad: Map<String, String>
+
+    private lateinit var søknad: Map<String, Any>
 
     init {
         Gitt("en søker med aktørid {string} og fødselsnummer {string}") { aktørIdKey: String, fødselsnummerKey: String ->
             val id = ULID().nextULID()
             val søknadsId = "GYLDIG_SOKNAD"
-            søknad = mapOf(
-                    "@id" to id,
-                    "@event_name" to "Søknad",
-                    "@opprettet" to LocalDateTime.now().toString(),
-                    "fødselsnummer" to Configuration.testbrukere[fødselsnummerKey]!!,
-                    "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
-                    "søknadsId" to søknadsId
+            søknad = mapOf (
+                "@id" to id,
+                "@event_name" to "Søknad",
+                "@opprettet" to LocalDateTime.now().toString(),
+                "tvingNyBehandling" to true,
+                "fødselsnummer" to Configuration.testbrukere[fødselsnummerKey]!!,
+                "aktørId" to Configuration.testbrukere[aktørIdKey]!!,
+                "søknadsId" to søknadsId
             )
             log.info { "lager søknad for $aktørIdKey med id $id og søknadsid $søknadsId" }
         }
@@ -76,8 +78,8 @@ class SaksbehandlingSteps() : No {
         Så("må søknaden for aktørid {string} manuelt behandles") { aktørIdKey: String ->
             await.atMost(Duration.ofSeconds(30L)).untilAsserted {
                 messages.toList()
-                        .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
-                        .any { it["gjeldendeTilstand"].asText() == "TilArena" } shouldBe true
+                    .filter { it["aktørId"].asText() == Configuration.testbrukere[aktørIdKey] }
+                    .any { it["gjeldendeTilstand"].asText() == "TilArena" } shouldBe true
             }
         }
 
