@@ -11,6 +11,7 @@ jobs:
   run:
     name: Run tests as a Job
     runs-on: ubuntu-latest
+    if: ${{ 1 == 2 }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
