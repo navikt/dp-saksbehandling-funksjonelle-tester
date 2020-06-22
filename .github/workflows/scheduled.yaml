@@ -3,7 +3,7 @@ name: Cron job
 on:
   schedule:
     # Run once every day
-    - cron: '0 1 * * *'
+    - cron: '*/10 * * * *'
 
 env:
   IMAGE: "docker.pkg.github.com/${{ github.repository }}/dp-saksbehandling-funksjonelle-tester:${{ github.sha }}"
@@ -11,7 +11,6 @@ jobs:
   run:
     name: Run tests as a Job
     runs-on: ubuntu-latest
-    if: ${{ 1 == 2 }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
