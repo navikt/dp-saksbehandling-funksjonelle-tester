@@ -15,7 +15,7 @@ private const val TOPIC = "privat-dagpenger-behov-v2"
 private val localProperties = ConfigurationMap(
     mapOf(
         "database.host" to "localhost",
-        "database.name" to "saksbehandling",
+        "database.name" to "dagpenger",
         "database.port" to "5432",
         "database.vault" to "postgresql/local/",
         "profile" to Profile.LOCAL.toString(),
@@ -31,7 +31,7 @@ private val localProperties = ConfigurationMap(
 private val devProperties = ConfigurationMap(
     mapOf(
         "database.host" to "b27dbvl013.preprod.local",
-        "database.name" to "saksbehandling",
+        "database.name" to "dagpenger",
         "database.port" to "5432",
         "database.vault" to "postgresql/preprod-fss/",
         "profile" to Profile.DEV.toString(),
