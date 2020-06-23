@@ -37,6 +37,7 @@ spec:
           - -v=10
           - -logtostderr
           - -vault=https://vault.adeo.no
+          - -save-token=/var/run/secrets/nais.io/vault/vault_token
           - -one-shot
           - -cn=secret:serviceuser/data/dev/srvdp-funk-test:dir=/var/run/secrets/nais.io/service_user,fmt=flatten
           - -cn=secret:secret/teamdagpenger/testdata/saksbehandling/:dir=/var/run/secrets/nais.io/test_data,fmt=flatten
