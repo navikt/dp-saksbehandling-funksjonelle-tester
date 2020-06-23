@@ -44,9 +44,10 @@ internal class DbCleanerTest {
     fun `Delete from person table`() {
         insertPerson("fnr1")
         insertPerson("fnr2")
+        insertPerson("fnr2")
 
         cleanUser(DataSource.instance, "fnr1") shouldBe 1
-        cleanUser(DataSource.instance, "fnr2") shouldBe 1
+        cleanUser(DataSource.instance, "fnr2") shouldBe 2
         cleanUser(DataSource.instance, "fnr1") shouldBe 0
     }
 
@@ -54,9 +55,10 @@ internal class DbCleanerTest {
     fun `Delete from melding table`() {
         insertMelding("fnr1")
         insertMelding("fnr2")
+        insertMelding("fnr2")
 
         cleanMelding(DataSource.instance, "fnr1") shouldBe 1
-        cleanMelding(DataSource.instance, "fnr2") shouldBe 1
+        cleanMelding(DataSource.instance, "fnr2") shouldBe 2
         cleanMelding(DataSource.instance, "fnr1") shouldBe 0
     }
 }
