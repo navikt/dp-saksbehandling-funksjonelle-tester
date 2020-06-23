@@ -35,12 +35,16 @@ application {
 }
 
 dependencies {
+    implementation(Database.HikariCP)
+    implementation(Database.Kotlinquery)
+    implementation(Database.Postgres)
+    implementation(Database.VaultJdbc) {
+        exclude(module = "slf4j-simple")
+        exclude(module = "slf4j-api")
+    }
     implementation(kotlin("stdlib-jdk8"))
-
     implementation("io.cucumber:cucumber-java8:6.1.1")
-
     implementation("org.awaitility:awaitility-kotlin:4.0.3")
-
     implementation(kotlin("test"))
     implementation(KoTest.assertions)
     implementation(KoTest.runner)
@@ -54,6 +58,34 @@ dependencies {
     implementation(Ulid.ulid)
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:${Kotlin.version}")
+
+    testImplementation(Junit5.api)
+    testRuntimeOnly(Junit5.engine)
+    testImplementation(KoTest.runner)
+    testImplementation(TestContainers.postgresql)
+}
+
+tasks.named("shadowJar") {
+    dependsOn("test")
+}
+
+tasks.named("jar") {
+    dependsOn("test")
+}
+
+tasks.named("compileKotlin") {
+    dependsOn("spotlessCheck")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        showExceptions = true
+        showStackTraces = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        events = setOf(org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED, org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED, org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
+        showStandardStreams = true
+    }
 }
 
 spotless {
