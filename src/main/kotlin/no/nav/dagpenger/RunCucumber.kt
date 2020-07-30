@@ -10,7 +10,8 @@ val args = arrayOf(
     "-g", "no.nav.dagpenger",
     "-p", "pretty",
     "classpath:features",
-    "--tags", "not @ignored ")
+    "--tags", "not @ignored "
+)
 
 fun main() {
     cleanDb()
