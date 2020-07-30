@@ -2,12 +2,12 @@ package no.nav.dagpenger
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import javax.sql.DataSource
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import kotliquery.using
 import mu.KotlinLogging
 import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil
+import javax.sql.DataSource
 
 private val log = KotlinLogging.logger {}
 
@@ -34,14 +34,16 @@ internal fun cleanDb() {
 }
 
 internal fun cleanUser(ds: DataSource, fnr: String): Int {
-    val statement = """DELETE FROM person WHERE fnr = ?"""
+    val statement =
+        """DELETE FROM person WHERE fnr = ?"""
     return using(sessionOf(ds)) {
         it.run(queryOf(statement, fnr).asUpdate)
     }
 }
 
 internal fun cleanMelding(ds: DataSource, fnr: String): Int {
-    val statement = """DELETE FROM melding WHERE fnr = ?"""
+    val statement =
+        """DELETE FROM melding WHERE fnr = ?"""
     return using(sessionOf(ds)) {
         it.run(queryOf(statement, fnr).asUpdate)
     }
