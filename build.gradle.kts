@@ -54,6 +54,7 @@ dependencies {
     implementation(Konfig.konfig)
 
     implementation(RapidAndRivers)
+    implementation(Ktor.serverNetty)
 
     implementation(Ulid.ulid)
 
